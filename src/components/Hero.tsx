@@ -100,9 +100,9 @@ const Hero = () => {
             variant="outline"
             size="lg"
             className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-3 rounded-full backdrop-blur-sm"
-            onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => window.location.href = '/projects'}
           >
-            Learn More
+            Our Projects
           </Button>
         </motion.div>
 
