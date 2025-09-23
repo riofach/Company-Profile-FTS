@@ -1,0 +1,300 @@
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Send, Phone, Mail, MapPin, Clock } from "lucide-react";
+
+const Contact = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 },
+    },
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    toast({
+      title: "Message Sent!",
+      description: "Thank you for contacting us. We'll get back to you soon.",
+    });
+
+    setIsSubmitting(false);
+    (e.target as HTMLFormElement).reset();
+  };
+
+  const contactInfo = [
+    {
+      icon: Phone,
+      title: "Phone",
+      details: ["+1 (555) 123-4567", "+1 (555) 987-6543"],
+      link: "tel:+15551234567"
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      details: ["hello@company.com", "support@company.com"],
+      link: "mailto:hello@company.com"
+    },
+    {
+      icon: MapPin,
+      title: "Address",
+      details: ["123 Innovation Street", "Tech City, TC 12345"],
+      link: "https://maps.google.com"
+    },
+    {
+      icon: Clock,
+      title: "Business Hours",
+      details: ["Mon - Fri: 9:00 AM - 6:00 PM", "Sat - Sun: 10:00 AM - 4:00 PM"],
+      link: null
+    }
+  ];
+
+  return (
+    <section ref={ref} id="contact" className="py-20 bg-background">
+      <div className="container mx-auto px-4">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="max-w-6xl mx-auto"
+        >
+          {/* Section Header */}
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Get In <span className="gradient-text">Touch</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Ready to start your next project? We'd love to hear about your ideas and discuss how we can help bring them to life.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <motion.div variants={itemVariants}>
+              <div className="card-gradient p-8 rounded-xl">
+                <h3 className="text-2xl font-bold mb-6">Send us a Message</h3>
+                
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-medium mb-2">
+                        First Name
+                      </label>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        required
+                        className="w-full"
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-sm font-medium mb-2">
+                        Last Name
+                      </label>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        required
+                        className="w-full"
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium mb-2">
+                      Email Address
+                    </label>
+                    <Input
+                      id="email"
+                      type="email"
+                      required
+                      className="w-full"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium mb-2">
+                      Company (Optional)
+                    </label>
+                    <Input
+                      id="company"
+                      type="text"
+                      className="w-full"
+                      placeholder="Your Company"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="subject" className="block text-sm font-medium mb-2">
+                      Subject
+                    </label>
+                    <Input
+                      id="subject"
+                      type="text"
+                      required
+                      className="w-full"
+                      placeholder="Project Inquiry"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium mb-2">
+                      Message
+                    </label>
+                    <Textarea
+                      id="message"
+                      required
+                      className="w-full min-h-[120px]"
+                      placeholder="Tell us about your project requirements..."
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        Send Message
+                        <Send className="ml-2 w-4 h-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </motion.div>
+
+            {/* Contact Information */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              <div className="card-gradient p-8 rounded-xl">
+                <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
+                
+                <div className="space-y-6">
+                  {contactInfo.map((info, index) => (
+                    <motion.div
+                      key={index}
+                      className="flex items-start space-x-4 group"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <info.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">{info.title}</h4>
+                        {info.details.map((detail, detailIndex) => (
+                          <p key={detailIndex} className="text-muted-foreground text-sm">
+                            {info.link && detailIndex === 0 ? (
+                              <a
+                                href={info.link}
+                                className="hover:text-primary transition-colors"
+                                target={info.link.startsWith('http') ? '_blank' : undefined}
+                                rel={info.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {detail}
+                              </a>
+                            ) : (
+                              detail
+                            )}
+                          </p>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Contact */}
+              <motion.div
+                className="card-gradient p-6 rounded-xl text-center"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h4 className="text-lg font-bold mb-3">Need Immediate Help?</h4>
+                <p className="text-muted-foreground text-sm mb-4">
+                  For urgent inquiries, call us directly or schedule a consultation.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => window.open('tel:+15551234567')}
+                  >
+                    <Phone className="w-4 h-4 mr-2" />
+                    Call Now
+                  </Button>
+                  <Button
+                    className="flex-1 bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
+                    onClick={() => window.open('mailto:hello@company.com')}
+                  >
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email Us
+                  </Button>
+                </div>
+              </motion.div>
+
+              {/* Response Time */}
+              <motion.div
+                className="card-gradient p-6 rounded-xl"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h4 className="text-lg font-bold mb-3 gradient-text">Response Time</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Email Inquiries:</span>
+                    <span className="font-medium">Within 4 hours</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Phone Calls:</span>
+                    <span className="font-medium">Immediate</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Project Quotes:</span>
+                    <span className="font-medium">Within 24 hours</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default Contact;
