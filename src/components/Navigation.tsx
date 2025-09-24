@@ -43,7 +43,7 @@ const Navigation = () => {
 			initial={{ y: -100 }}
 			animate={{ y: 0 }}
 			className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-				isScrolled ? 'glass border-b' : 'bg-transparent'
+				isScrolled ? 'border-b bg-white/90 shadow-sm dark:glass' : 'bg-white dark:bg-transparent'
 			}`}
 		>
 			<div className="container mx-auto px-4">
@@ -63,13 +63,13 @@ const Navigation = () => {
 							draggable={false}
 							loading="eager"
 						/>
-						<span className="text-xl font-bold hidden sm:inline bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 dark:from-white dark:to-white/70">
+						<span className="text-xl font-bold hidden sm:inline bg-clip-text text-transparent bg-gradient-to-r from-black to-black/70 dark:from-white dark:to-white/70">
 							Fujiyama
 						</span>
 					</motion.button>
 
 					{/* Desktop Navigation */}
-					<div className="hidden md:flex items-center space-x-8">
+					<div className="hidden md:flex items-center space-x-8 text-black dark:text-inherit">
 						{navItems.map((item) => (
 							<button
 								key={item.name}
@@ -83,7 +83,7 @@ const Navigation = () => {
 					</div>
 
 					{/* Theme Toggle & Mobile Menu */}
-					<div className="flex items-center space-x-2">
+					<div className="flex items-center space-x-2 text-black dark:text-inherit">
 						<Button
 							variant="ghost"
 							size="icon"
@@ -112,7 +112,7 @@ const Navigation = () => {
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: 'auto' }}
 							exit={{ opacity: 0, height: 0 }}
-							className="md:hidden border-t glass"
+							className="md:hidden border-t bg-white dark:glass"
 						>
 							<div className="py-4 space-y-2">
 								{navItems.map((item) => (

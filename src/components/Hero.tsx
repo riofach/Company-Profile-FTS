@@ -1,6 +1,9 @@
-import { motion } from 'framer-motion';
+import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { Stars } from '@react-three/drei';
+import { useEffect } from 'react';
 
 const Hero = () => {
 	const containerVariants = {
@@ -23,35 +26,30 @@ const Hero = () => {
 		},
 	};
 
-	return (
-		<section
-			id="home"
-			className="relative min-h-screen flex items-center justify-center overflow-hidden"
-		>
-			{/* Animated Background */}
-			<div className="absolute inset-0 hero-gradient" />
+	// Aurora background state
+	const COLORS_TOP = ['#13FFAA', '#1E67C6', '#CE84CF', '#DD335C'];
+	const color = useMotionValue(COLORS_TOP[0]);
+	useEffect(() => {
+		animate(color, COLORS_TOP, {
+			ease: 'easeInOut',
+			duration: 10,
+			repeat: Infinity,
+			repeatType: 'mirror',
+		});
+	}, []);
+	const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #020617 50%, ${color})`;
 
-			{/* Floating Elements */}
-			<div className="absolute inset-0 overflow-hidden">
-				{[...Array(20)].map((_, i) => (
-					<motion.div
-						key={i}
-						className="absolute w-2 h-2 bg-white/20 rounded-full"
-						style={{
-							left: `${Math.random() * 100}%`,
-							top: `${Math.random() * 100}%`,
-						}}
-						animate={{
-							y: [0, -30, 0],
-							opacity: [0.2, 0.8, 0.2],
-						}}
-						transition={{
-							duration: 3 + Math.random() * 2,
-							repeat: Infinity,
-							delay: Math.random() * 2,
-						}}
-					/>
-				))}
+	return (
+		<motion.section
+			id="home"
+			style={{ backgroundImage }}
+			className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gray-950"
+		>
+			{/* 3D Stars Background */}
+			<div className="absolute inset-0 z-0">
+				<Canvas>
+					<Stars radius={50} count={2500} factor={4} fade speed={2} />
+				</Canvas>
 			</div>
 
 			{/* Content */}
@@ -140,7 +138,7 @@ const Hero = () => {
 					<div className="w-1 h-3 bg-white/60 rounded-full mt-2" />
 				</div>
 			</motion.div>
-		</section>
+		</motion.section>
 	);
 };
 
