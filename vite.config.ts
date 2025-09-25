@@ -15,4 +15,25 @@ export default defineConfig(({ mode }) => ({
 			'@': path.resolve(__dirname, './src'),
 		},
 	},
+	build: {
+		sourcemap: false,
+		minify: 'terser',
+		terserOptions: {
+			compress: {
+				drop_console: mode === 'production',
+				drop_debugger: mode === 'production',
+			},
+		},
+		rollupOptions: {
+			output: {
+				manualChunks: {
+					vendor: ['react', 'react-dom'],
+					ui: ['@radix-ui/react-accordion', '@radix-ui/react-alert-dialog'],
+				},
+			},
+		},
+	},
+	define: {
+		__APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+	},
 }));

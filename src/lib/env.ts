@@ -1,10 +1,10 @@
 // Environment configuration untuk SEO dan Analytics
 export const ENV_CONFIG = {
 	// Google Analytics - Replace with your actual GA4 Measurement ID
-	GA_MEASUREMENT_ID: 'G-8184YPC7R3',
+	GA_MEASUREMENT_ID: import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-8184YPC7R3',
 
 	// Site configuration
-	SITE_URL: 'https://fujiyamatech.com',
+	SITE_URL: import.meta.env.VITE_SITE_URL || 'https://fujiyamatech.com',
 	SITE_NAME: 'Fujiyama Technology Solutions',
 
 	// Contact information (update with real information)
