@@ -1,73 +1,113 @@
-# Welcome to your Lovable project
+# 🚀 Fujiyama Technology Solutions - Company Profile
 
-## Project info
+**Company Profile Website untuk Fujiyama Technology Solutions (FTS)** - Japanese-rooted IT company providing innovative digital solutions in Indonesia.
 
-**URL**: https://lovable.dev/projects/ff4e2fe6-dd6d-4aaa-b724-64270bed3cf3
+## 📋 Project Info
 
-## How can I edit this code?
+**Lovable URL**: https://lovable.dev/projects/ff4e2fe6-dd6d-4aaa-b724-64270bed3cf3
 
-There are several ways of editing your application.
+**Railway Deployment**: https://fujiyama-tech.railway.app
 
-**Use Lovable**
+**Technologies**: React 18, TypeScript, Vite, Tailwind CSS, Framer Motion, shadcn/ui
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ff4e2fe6-dd6d-4aaa-b724-64270bed3cf3) and start prompting.
+## ✨ Features
 
-Changes made via Lovable will be committed automatically to this repo.
+- 🎨 **Modern UI/UX** - Beautiful, responsive design with dark/light theme
+- 🚀 **Performance Optimized** - Fast loading with Vite and optimized assets
+- 📱 **Mobile-First** - Responsive design for all devices
+- 🔍 **SEO Ready** - Complete SEO optimization with meta tags and structured data
+- 📊 **Analytics** - Google Analytics 4 integration
+- 🎭 **Animations** - Smooth Framer Motion animations
+- 🛡️ **Security** - Security headers and best practices
+- 🌐 **Multi-language Ready** - Indonesian and English support
 
-**Use your preferred IDE**
+## 🛠️ Deployment
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+This project is configured for **Railway deployment** with optimized performance and security.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### **Railway Deployment Guide**
 
-Follow these steps:
+See [railway.md](./railway.md) for complete deployment instructions.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### **Quick Deploy Commands**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+# Install Railway CLI
+npm i -g @railway/cli
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Login to Railway
+railway login
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Deploy to Railway
+railway up
+
+# View deployment logs
+railway logs
+
+# Set environment variables
+railway variables set VITE_GA_MEASUREMENT_ID=G-YOUR_GA_ID
 ```
 
-**Edit a file directly in GitHub**
+### **Environment Setup**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Copy environment variables from [ENV_SETUP.md](./ENV_SETUP.md) to Railway dashboard.
 
-**Use GitHub Codespaces**
+## 🛠️ Technologies
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### **Frontend Framework**
 
-## What technologies are used for this project?
+- ⚛️ **React 18** - Modern React with hooks and concurrent features
+- 📘 **TypeScript** - Type-safe development
+- ⚡ **Vite** - Fast build tool and dev server
 
-This project is built with:
+### **Styling & UI**
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- 🎨 **Tailwind CSS** - Utility-first CSS framework
+- 🧩 **shadcn/ui** - Re-usable UI components (Radix UI)
+- 🎭 **Framer Motion** - Smooth animations and transitions
+- 🌙 **next-themes** - Dark/light theme support
 
-## How can I deploy this project?
+### **Development Tools**
 
-Simply open [Lovable](https://lovable.dev/projects/ff4e2fe6-dd6d-4aaa-b724-64270bed3cf3) and click on Share -> Publish.
+- 🏗️ **Vite** - Build tool and dev server
+- 🔍 **ESLint** - Code linting
+- 📏 **TypeScript** - Type checking
+- 🎯 **Railway** - Deployment platform
 
-## Can I connect a custom domain to my Lovable project?
+### **SEO & Analytics**
 
-Yes, you can!
+- 🔍 **Complete SEO** - Meta tags, structured data, sitemap
+- 📊 **Google Analytics 4** - User behavior tracking
+- 🚀 **Performance Monitoring** - Core Web Vitals tracking
+- 🤖 **Search Engine Optimization** - Rich snippets, meta descriptions
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎨 Development
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### **Local Development**
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Lint code
+npm run lint
+```
+
+### **Available Scripts**
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:prod` - Production build with optimization
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run type-check` - TypeScript type checking
+- `npm run deploy` - Deploy to Railway
