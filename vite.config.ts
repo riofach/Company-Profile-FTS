@@ -14,13 +14,12 @@ export default defineConfig(({ mode }) => ({
 	// TAMBAHKAN BLOK SERVER DI BAWAH INI
 	server: {
 		preview: {
-			host: '0.0.0.0',
+			// Baris port & host ini bisa dihapus jika sudah ada di package.json,
+			// tapi tidak apa-apa jika ada di kedua tempat.
 			port: 8080,
-			strictPort: true,
-			// Izinkan akses dari domain Railway Anda
-			hmr: {
-				host: 'company-profile-fts-production.up.railway.app',
-			},
+			host: true,
+			// TAMBAHKAN KONFIGURASI INI:
+			allowedHosts: ['company-profile-fts-production.up.railway.app'],
 		},
 	},
 	build: {
