@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- Homepage - Highest priority -->
+  <url>
+    <loc>https://fujiyamatech.com/</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- About Section -->
+  <url>
+    <loc>https://fujiyamatech.com/#about</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Services Section -->
+  <url>
+    <loc>https://fujiyamatech.com/#services</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Company Section -->
+  <url>
+    <loc>https://fujiyamatech.com/#company</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Contact Section -->
+  <url>
+    <loc>https://fujiyamatech.com/#contact</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Projects Page -->
+  <url>
+    <loc>https://fujiyamatech.com/projects</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Project Categories -->
+  <url>
+    <loc>https://fujiyamatech.com/projects/web-design</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/projects/web-development</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/projects/mobile-development</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Service-specific pages (for future expansion) -->
+  <url>
+    <loc>https://fujiyamatech.com/services/web-development</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/services/mobile-development</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/services/cloud-solutions</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/services/cybersecurity</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/services/performance-optimization</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/services/digital-strategy</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Company information pages -->
+  <url>
+    <loc>https://fujiyamatech.com/company/mission</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/company/team</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/company/careers</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legal pages -->
+  <url>
+    <loc>https://fujiyamatech.com/privacy-policy</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://fujiyamatech.com/terms-of-service</loc>
+    <lastmod>2024-12-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

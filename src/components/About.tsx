@@ -63,11 +63,14 @@ const About = () => {
 					{/* Section Header */}
 					<motion.div variants={itemVariants} className="text-center mb-16">
 						<h2 className="text-4xl md:text-5xl font-bold mb-6">
-							About <span className="gradient-text">Our Company</span>
+							About <span className="gradient-text">Fujiyama Technology Solutions</span>
 						</h2>
-						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-							We are a forward-thinking technology company dedicated to creating innovative
-							solutions that empower businesses to thrive in the digital age.
+						<p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+							<strong>Fujiyama Technology Solutions (FTS)</strong> is a{' '}
+							<strong>Japanese-rooted IT company</strong> committed to building Indonesia's digital
+							future. With over 95% of our team proudly Indonesian, we combine global technology
+							trends with local market insight to create advanced digital solutions tailored for
+							businesses, government, and society across the archipelago.
 						</p>
 					</motion.div>
 
@@ -76,23 +79,34 @@ const About = () => {
 						{/* Left Content */}
 						<motion.div variants={itemVariants}>
 							<h3 className="text-2xl md:text-3xl font-bold mb-6">
-								Transforming Ideas into Reality
+								Transforming Ideas into Digital Reality
 							</h3>
-							<div className="space-y-4 text-muted-foreground">
+							<div className="space-y-4 text-muted-foreground leading-relaxed">
 								<p>
-									Founded with a vision to bridge the gap between innovative technology and
-									practical business solutions, we have been at the forefront of digital
-									transformation for over a decade.
+									Founded in <strong>2013</strong> with a vision to bridge the gap between
+									innovative technology and practical business solutions,{' '}
+									<strong>Fujiyama Technology Solutions</strong> has been at the forefront of
+									digital transformation for over a decade. Our expertise spans across{' '}
+									<strong>web development</strong>, <strong>mobile application development</strong>,
+									<strong>cloud solutions</strong>, and <strong>cybersecurity services</strong>.
 								</p>
 								<p>
-									FTS is a Japanese-rooted IT innovator committed to building a digital future for
-									Indonesia. With over 95% of our team proudly Indonesian, we combine global
-									technology trends with local insight to create advanced digital solutions tailored
-									for businesses, government, and society.
+									As a <strong>Japanese IT company in Indonesia</strong>, we bring the best of both
+									worlds - Japanese precision and quality standards combined with deep understanding
+									of Indonesian market dynamics. Our 95% Indonesian team ensures that we deliver
+									solutions that are not just technologically advanced, but also culturally relevant
+									and locally optimized for businesses across Jakarta, Surabaya, Bandung, and
+									beyond.
 								</p>
 								<p>
-									Our mission is to bridge the gap between innovation and real-world needs
-									empowering businesses, enhancing government services, and improving everyday life.
+									Our mission is to bridge the gap between innovation and real-world needs,
+									empowering businesses with cutting-edge technology, enhancing government digital
+									services, and improving everyday life through smart digital solutions. We
+									specialize in creating
+									<strong>custom software development</strong>,{' '}
+									<strong>enterprise applications</strong>, and{' '}
+									<strong>digital transformation strategies</strong>
+									tailored for the Indonesian market.
 								</p>
 							</div>
 						</motion.div>

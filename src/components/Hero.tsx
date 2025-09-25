@@ -43,7 +43,7 @@ const Hero = () => {
 		<motion.section
 			id="home"
 			style={{ backgroundImage }}
-			className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gray-950"
+			className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gray-950 pt-10 md:pt-24"
 		>
 			{/* 3D Stars Background */}
 			<div className="absolute inset-0 z-0">
@@ -57,11 +57,11 @@ const Hero = () => {
 				variants={containerVariants}
 				initial="hidden"
 				animate="visible"
-				className="relative z-10 text-center max-w-4xl mx-auto px-4"
+				className="relative z-10 text-center max-w-5xl mx-auto px-6 md:px-8"
 			>
 				<motion.div
 					variants={itemVariants}
-					className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-6 py-2 mb-8"
+					className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 md:px-6 md:py-2 mb-8 mt-8 md:mt-0"
 				>
 					<Sparkles className="w-4 h-4 text-white" />
 					<span className="text-white text-sm font-medium">Innovating the Future</span>
@@ -69,7 +69,7 @@ const Hero = () => {
 
 				<motion.h1
 					variants={itemVariants}
-					className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+					className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight px-2"
 				>
 					Building Tomorrow's
 					<span className="block bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
@@ -79,10 +79,12 @@ const Hero = () => {
 
 				<motion.p
 					variants={itemVariants}
-					className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed"
+					className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed px-4"
 				>
 					We transform ideas into powerful digital experiences that drive growth and innovation for
-					businesses worldwide.
+					businesses worldwide. As a leading <strong>IT services company in Indonesia</strong> with
+					Japanese technology expertise, we deliver cutting-edge web development, mobile
+					applications, cloud solutions, and cybersecurity services.
 				</motion.p>
 
 				<motion.div
@@ -113,7 +115,7 @@ const Hero = () => {
 				{/* Stats */}
 				<motion.div
 					variants={itemVariants}
-					className="grid grid-cols-3 gap-8 mt-16 max-w-md mx-auto"
+					className="grid grid-cols-3 gap-8 mt-10 pb-5 max-w-md mx-auto"
 				>
 					{[
 						{ number: '500+', label: 'Projects Completed' },
@@ -132,7 +134,7 @@ const Hero = () => {
 			<motion.div
 				animate={{ y: [0, 10, 0] }}
 				transition={{ duration: 2, repeat: Infinity }}
-				className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+				className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
 			>
 				<div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
 					<div className="w-1 h-3 bg-white/60 rounded-full mt-2" />

@@ -10,5 +10,56 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+# Robots.txt for Fujiyama Technology Solutions
+# Last updated: 2024
+
+# Allow all web crawlers access to all content
 User-agent: *
 Allow: /
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block access to admin or sensitive areas (if any)
+User-agent: *
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/internal/
+
+# Allow access to CSS, JS, and images
+User-agent: *
+Allow: /Logo%20FTS.jpg
+Allow: /Logo%20FTS-PNG.png
+Allow: /favicon.ico
+Allow: /images/
+
+# Sitemap location
+Sitemap: https://fujiyamatech.com/sitemap.xml
+
+# Additional directives
+User-agent: *
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+
+# Block common spam bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
