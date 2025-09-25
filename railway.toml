@@ -1,8 +1,0 @@
-[build]
-builder = "nixpacks"
-buildCommand = "npm run build"
-
-[deploy]
-startCommand = "npm run preview"
-healthcheckPath = "/health.json"
-healthcheckTimeout = 240
