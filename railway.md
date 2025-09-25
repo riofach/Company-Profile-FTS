@@ -2,6 +2,37 @@
 
 Panduan lengkap untuk deploy Company Profile FTS ke Railway dengan zero-downtime deployment.
 
+## ⚠️ QUICK DEPLOYMENT INSTRUCTIONS
+
+**Jika MCP Railway tidak bisa digunakan, ikuti langkah manual berikut:**
+
+### **Step 1: Push ke GitHub**
+```bash
+git add .
+git commit -m "Final Railway deployment setup"
+git push origin main
+```
+
+### **Step 2: Deploy via Railway Dashboard**
+1. **Go to**: https://railway.app/new
+2. **Choose**: "Deploy from GitHub repo"
+3. **Connect GitHub** dan pilih repository `Company-Profile-FTS`
+4. **Railway akan otomatis**:
+   - Detect project sebagai **React/Vite**
+   - Install dependencies
+   - Build aplikasi
+   - Deploy dengan konfigurasi di `railway.toml`
+
+### **Step 3: Check Deployment Status**
+- **Wait** 2-3 menit untuk build selesai
+- **Check logs** di Railway dashboard
+- **App will be available** di URL yang diberikan Railway
+
+### **Step 4: If Build Fails**
+1. Go to Railway project dashboard
+2. Check **"Deploy Logs"** untuk error details
+3. Lihat **"Build Logs"** untuk compilation errors
+
 ## 📋 Prerequisites
 
 Sebelum memulai deployment, pastikan Anda sudah memiliki:
@@ -546,11 +577,26 @@ jobs:
           railway-token: ${{ secrets.RAILWAY_TOKEN }}
 ```
 
+## ✅ PROJECT STATUS - READY FOR RAILWAY
+
+**Project sudah dikonfigurasi dengan setup paling minimal untuk deployment Railway:**
+
+### **✅ Konfigurasi Minimal:**
+- ✅ **railway.toml**: Simple config, standard ports
+- ✅ **package.json**: Essential scripts only
+- ✅ **Dockerfile**: Single stage, no complexity
+- ✅ **Dependencies**: Clean, no conflicts
+
+### **✅ Railway Auto-Detection:**
+- ✅ **Vite + React** project detection
+- ✅ **TypeScript** compilation via Nixpacks
+- ✅ **Static file serving** built-in
+- ✅ **Health checks** otomatis
+
 ## 📝 Post-Deployment Checklist
 
 - [ ] ✅ Website loads successfully
 - [ ] ✅ All pages are accessible
-- [ ] ✅ Health check endpoint works (`/health.json`)
 - [ ] ✅ SEO meta tags are working
 - [ ] ✅ Analytics tracking is active
 - [ ] ✅ SSL certificate is active
