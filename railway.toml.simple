@@ -1,0 +1,15 @@
+# Alternative Railway configuration
+# Use this if the main railway.toml doesn't work
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run start"
+healthcheckPath = "/"
+restartPolicyType = "ON_FAILURE"
+healthcheckTimeout = 300
+
+[[services]]
+internalPort = 8080
+processes = ["npm run start"]

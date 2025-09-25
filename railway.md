@@ -62,11 +62,15 @@ Railway akan automatically detect this is a **React/Vite** project and use the a
 ├── 📄 Dockerfile.simple     # Alternative Dockerfile
 ├── 📄 nginx.conf            # Nginx server configuration
 ├── 📄 .dockerignore         # Docker build exclusions
-├── 📄 package.json          # Dependencies & scripts
+├── 📄 package.json          # Dependencies & scripts (UPDATED)
 ├── 📄 vite.config.ts        # Vite configuration
 ├── 📁 src/                  # Source code
 ├── 📁 public/               # Static assets
-├── 📄 railway.md            # Deployment guide
+│   ├── 📄 health.json       # Static health check (NEW)
+│   ├── 📄 robots.txt        # SEO robots file
+│   ├── 📄 sitemap.xml       # SEO sitemap
+│   └── 📁 images/           # Company images
+├── 📄 railway.md            # Deployment guide (UPDATED)
 └── 📄 ENV_SETUP.md          # Environment variables guide
 ```
 
@@ -399,6 +403,68 @@ railway up --detach
 2. Add all required environment variables
 3. Redeploy: `railway up`
 
+### **Error: Healthcheck Failure - "service unavailable"**
+
+**Root Cause**: Railway healthcheck tidak bisa mengakses endpoint aplikasi.
+
+**Solution 1 - Update Health Check Path** (RECOMMENDED):
+
+```toml
+# Update railway.toml
+[deploy]
+healthcheckPath = "/health.json"  # Use static JSON file
+healthcheckTimeout = 300          # Increase timeout
+healthcheckInterval = 30         # Check every 30 seconds
+```
+
+**Solution 2 - Create Static Health File**:
+
+```bash
+# Create public/health.json
+echo '{"status": "healthy", "service": "FTS", "version": "1.0.0"}' > public/health.json
+```
+
+**Solution 3 - Use Different Port**:
+
+```toml
+[build.env]
+PORT = "8080"
+
+[deploy]
+startCommand = "npm run start"
+
+[[services]]
+internalPort = 8080
+```
+
+**Solution 6 - Use Simple Configuration**:
+
+```bash
+# Rename railway.toml.simple to railway.toml
+mv railway.toml.simple railway.toml
+railway up --force
+```
+
+**Solution 4 - Debug with Railway CLI**:
+
+```bash
+# Check if service is running
+railway service
+
+# Check logs
+railway logs --follow
+
+# Test health check manually
+curl https://your-app.railway.app/health.json
+```
+
+**Solution 5 - Railway Dashboard Debug**:
+
+1. Go to Railway Dashboard → Your Service
+2. Click on **"Domains"** to see assigned domain
+3. Try accessing `https://your-app.railway.app/health.json` manually
+4. Check **"Logs"** for startup errors
+
 ## 📊 Monitoring & Logs
 
 ### **Railway Dashboard Monitoring:**
@@ -484,12 +550,15 @@ jobs:
 
 - [ ] ✅ Website loads successfully
 - [ ] ✅ All pages are accessible
+- [ ] ✅ Health check endpoint works (`/health.json`)
 - [ ] ✅ SEO meta tags are working
 - [ ] ✅ Analytics tracking is active
 - [ ] ✅ SSL certificate is active
 - [ ] ✅ Domain resolves correctly
 - [ ] ✅ Performance is optimized
 - [ ] ✅ Error monitoring is set up
+- [ ] ✅ Railway logs show successful startup
+- [ ] ✅ Environment variables are loaded correctly
 
 ## 🎯 Production URLs
 

@@ -3,15 +3,17 @@ builder = "nixpacks"
 
 [build.env]
 NODE_ENV = "production"
+PORT = "8080"
 
 [deploy]
-startCommand = "npm run preview"
-healthcheckPath = "/"
+startCommand = "npm run start"
+healthcheckPath = "/health.json"
 restartPolicyType = "ON_FAILURE"
-healthcheckTimeout = 100
+healthcheckTimeout = 300
+healthcheckInterval = 30
 
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "npm-8_x", "typescript"]
+nixPkgs = ["nodejs-18_x", "npm-8_x"]
 
 [phases.install]
 cmds = ["npm ci"]
@@ -20,8 +22,8 @@ cmds = ["npm ci"]
 cmds = ["npm run build"]
 
 [start]
-cmd = "npm run preview"
+cmd = "npm run start"
 
 [[services]]
-internalPort = 3000
-processes = ["npm run preview"]
+internalPort = 8080
+processes = ["npm run start"]

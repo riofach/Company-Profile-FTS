@@ -41,7 +41,7 @@ railway login
 # Deploy to Railway
 railway up
 
-# Force rebuild
+# Force rebuild (if healthcheck fails)
 railway up --force
 
 # View deployment logs
@@ -49,6 +49,9 @@ railway logs
 
 # View logs with follow
 railway logs --follow
+
+# Debug healthcheck
+curl https://your-app.railway.app/health.json
 
 # Set environment variables
 railway variables set VITE_GA_MEASUREMENT_ID=G-YOUR_GA_ID
