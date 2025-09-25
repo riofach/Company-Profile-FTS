@@ -4,5 +4,5 @@ buildCommand = "npm run build"
 
 [deploy]
 startCommand = "npm run preview"
-healthcheckPath = "/health"
-healthcheckTimeout = 200
+healthcheckPath = "/health.json"
+healthcheckTimeout = 240
