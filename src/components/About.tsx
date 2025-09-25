@@ -79,34 +79,26 @@ const About = () => {
 						{/* Left Content */}
 						<motion.div variants={itemVariants}>
 							<h3 className="text-2xl md:text-3xl font-bold mb-6">
-								Transforming Ideas into Digital Reality
+								Empowering Digital Transformation
 							</h3>
 							<div className="space-y-4 text-muted-foreground leading-relaxed">
 								<p>
-									Founded in <strong>2013</strong> with a vision to bridge the gap between
-									innovative technology and practical business solutions,{' '}
-									<strong>Fujiyama Technology Solutions</strong> has been at the forefront of
-									digital transformation for over a decade. Our expertise spans across{' '}
-									<strong>web development</strong>, <strong>mobile application development</strong>,
+									Founded in <strong>February 2025</strong>,{' '}
+									<strong>Fujiyama Technology Solutions (FTS)</strong> was established with a vision
+									to bridge the gap between technological innovation and practical business
+									solutions. We are a <strong>Japanese IT company in Indonesia</strong> that is
+									ready to drive digital transformation through our core expertise in{' '}
+									<strong>web development</strong>, <strong>mobile applications</strong>,{' '}
 									<strong>cloud solutions</strong>, and <strong>cybersecurity services</strong>.
 								</p>
 								<p>
-									As a <strong>Japanese IT company in Indonesia</strong>, we bring the best of both
-									worlds - Japanese precision and quality standards combined with deep understanding
-									of Indonesian market dynamics. Our 95% Indonesian team ensures that we deliver
-									solutions that are not just technologically advanced, but also culturally relevant
-									and locally optimized for businesses across Jakarta, Surabaya, Bandung, and
-									beyond.
-								</p>
-								<p>
-									Our mission is to bridge the gap between innovation and real-world needs,
-									empowering businesses with cutting-edge technology, enhancing government digital
-									services, and improving everyday life through smart digital solutions. We
-									specialize in creating
-									<strong>custom software development</strong>,{' '}
-									<strong>enterprise applications</strong>, and{' '}
-									<strong>digital transformation strategies</strong>
-									tailored for the Indonesian market.
+									We combine Japanese precision and quality standards with a deep understanding of
+									local market dynamics, thanks to our team that is 95% Indonesian. Our
+									specializations include custom software development, enterprise applications, and
+									tailored digital transformation strategies specifically designed for the
+									Indonesian market. FTS is committed to providing solutions that are not only
+									technologically advanced but also culturally relevant and optimized for businesses
+									across Indonesia, including Jakarta, Surabaya, and Bandung.
 								</p>
 							</div>
 						</motion.div>
@@ -114,10 +106,10 @@ const About = () => {
 						{/* Right Content - Stats */}
 						<motion.div variants={itemVariants} className="grid grid-cols-2 gap-6">
 							{[
-								{ number: '10+', label: 'Years Experience' },
 								{ number: '500+', label: 'Projects Delivered' },
 								{ number: '50+', label: 'Team Members' },
 								{ number: '25+', label: 'Countries Served' },
+								{ number: '24/7', label: 'Support Available' },
 							].map((stat, index) => (
 								<motion.div
 									key={index}
