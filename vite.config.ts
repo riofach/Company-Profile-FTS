@@ -14,10 +14,6 @@ export default defineConfig(({ mode }) => ({
 	// TAMBAHKAN BLOK SERVER DI BAWAH INI
 	server: {
 		preview: {
-			// Baris port & host ini bisa dihapus jika sudah ada di package.json,
-			// tapi tidak apa-apa jika ada di kedua tempat.
-			port: 8080,
-			host: true,
 			// TAMBAHKAN KONFIGURASI INI:
 			allowedHosts: ['company-profile-fts-production.up.railway.app'],
 		},
