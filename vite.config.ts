@@ -11,10 +11,16 @@ export default defineConfig(({ mode }) => ({
 			'@': path.resolve(__dirname, './src'),
 		},
 	},
+	// TAMBAHKAN BLOK SERVER DI BAWAH INI
 	server: {
 		preview: {
-			host: true,
+			host: '0.0.0.0',
 			port: 8080,
+			strictPort: true,
+			// Izinkan akses dari domain Railway Anda
+			hmr: {
+				host: 'company-profile-fts-production.up.railway.app',
+			},
 		},
 	},
 	build: {
