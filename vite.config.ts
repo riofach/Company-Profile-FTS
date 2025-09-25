@@ -11,12 +11,24 @@ export default defineConfig(({ mode }) => ({
 			'@': path.resolve(__dirname, './src'),
 		},
 	},
-	// TAMBAHKAN BLOK SERVER DI BAWAH INI
+	// Konfigurasi server untuk preview dan production
 	server: {
-		preview: {
-			// TAMBAHKAN KONFIGURASI INI:
-			allowedHosts: ['company-profile-fts-production.up.railway.app'],
-		},
+		host: true,
+		allowedHosts: [
+			'company-profile-fts-production.up.railway.app',
+			'fujiyama-tech.railway.app',
+			'localhost',
+			'127.0.0.1',
+		],
+	},
+	preview: {
+		host: true,
+		allowedHosts: [
+			'company-profile-fts-production.up.railway.app',
+			'fujiyama-tech.railway.app',
+			'localhost',
+			'127.0.0.1',
+		],
 	},
 	build: {
 		sourcemap: false,
