@@ -41,11 +41,23 @@ railway login
 # Deploy to Railway
 railway up
 
+# Force rebuild
+railway up --force
+
 # View deployment logs
 railway logs
 
+# View logs with follow
+railway logs --follow
+
 # Set environment variables
 railway variables set VITE_GA_MEASUREMENT_ID=G-YOUR_GA_ID
+
+# Check Railway status
+railway status
+
+# Open Railway dashboard
+railway open
 ```
 
 ### **Environment Setup**

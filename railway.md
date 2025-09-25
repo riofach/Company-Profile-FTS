@@ -57,13 +57,17 @@ Railway akan automatically detect this is a **React/Vite** project and use the a
 
 ```
 /Company-Profile-FTS/
-├── 📄 railway.toml          # Railway configuration
-├── 📄 Dockerfile            # Container configuration
+├── 📄 railway.toml          # Railway configuration (Nixpacks)
+├── 📄 Dockerfile            # Main container configuration
+├── 📄 Dockerfile.simple     # Alternative Dockerfile
+├── 📄 nginx.conf            # Nginx server configuration
+├── 📄 .dockerignore         # Docker build exclusions
 ├── 📄 package.json          # Dependencies & scripts
 ├── 📄 vite.config.ts        # Vite configuration
 ├── 📁 src/                  # Source code
 ├── 📁 public/               # Static assets
-└── 📄 railway.md            # This guide
+├── 📄 railway.md            # Deployment guide
+└── 📄 ENV_SETUP.md          # Environment variables guide
 ```
 
 ## ⚙️ Configuration Files
@@ -125,7 +129,56 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-### **3. Nginx Configuration (`nginx.conf`)**
+### **3. Alternative Dockerfile (`Dockerfile.simple`)**
+
+Jika Nixpacks masih bermasalah, Railway dapat menggunakan Dockerfile alternative:
+
+```dockerfile
+FROM node:18-alpine
+
+# Install system dependencies
+RUN apk add --no-cache dumb-init curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Build the application
+RUN npm run build
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Change ownership of app directory
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "3000"]
+```
+
+### **4. Nginx Configuration (`nginx.conf`)**
 
 ```nginx
 events {
@@ -203,14 +256,18 @@ Update `package.json` scripts untuk production:
 {
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
+		"build": "vite build",
+		"build:dev": "vite build --mode development",
+		"build:prod": "vite build --mode production",
+		"build:check": "tsc --noEmit",
 		"preview": "vite preview --port 3000 --host 0.0.0.0",
 		"start": "npm run preview",
-		"build:prod": "npm run build",
 		"deploy": "railway up"
 	}
 }
 ```
+
+**Note**: Kami menghilangkan `tsc &&` dari build script karena Railway menggunakan Nixpacks yang sudah menginstall TypeScript compiler.
 
 ## 🌐 Domain Configuration
 
@@ -243,6 +300,74 @@ Update `package.json` scripts untuk production:
 
 ## 🔍 Troubleshooting Common Issues
 
+### **Error: "tsc: not found" atau "TypeScript not found"**
+
+**Root Cause**: Railway's Nixpacks tidak menginstall TypeScript compiler secara default.
+
+**Solution 1 - Update railway.toml** (RECOMMENDED):
+
+```toml
+[build]
+builder = "nixpacks"
+
+[build.env]
+NODE_ENV = "production"
+
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "npm-8_x", "typescript"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run preview"
+```
+
+**Solution 2 - Update package.json build script**:
+
+```json
+{
+	"scripts": {
+		"build": "vite build", // Remove "tsc &&" prefix
+		"build:prod": "vite build --mode production"
+	}
+}
+```
+
+**Solution 3 - Manual TypeScript Installation**:
+
+```bash
+# Install TypeScript globally in Railway container
+railway run npm install -g typescript
+
+# Or install as dev dependency
+railway run npm install --save-dev typescript
+```
+
+**Solution 4 - Use alternative Dockerfile**:
+
+1. Rename `Dockerfile.simple` to `Dockerfile`
+2. Railway akan otomatis menggunakan Docker build
+3. Redeploy: `railway up --force`
+
+**Solution 5 - Force Nixpacks to use specific packages**:
+
+```toml
+# Update railway.toml
+[phases.setup]
+nixPkgs = [
+  "nodejs-18_x",
+  "npm-8_x",
+  "typescript-5_x"
+]
+
+[phases.install]
+cmds = ["npm ci --include=dev"]
+```
+
 ### **Error: "process is not defined"**
 
 **Solution**: Environment variables sudah dikonfigurasi dengan benar di `env.ts`
@@ -255,8 +380,11 @@ Update `package.json` scripts untuk production:
 # Check Railway logs
 railway logs
 
-# Rebuild project
+# Rebuild project with force
 railway up --force
+
+# Clear Railway cache
+railway up --detach
 ```
 
 ### **Error: Port Already in Use**
