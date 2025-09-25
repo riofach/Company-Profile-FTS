@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
 		host: true,
 		allowedHosts: [
 			'company-profile-fts-production.up.railway.app',
+			'preview.fts.biz.id',
 			'fujiyama-tech.railway.app',
 			'localhost',
 			'127.0.0.1',
@@ -25,6 +26,7 @@ export default defineConfig(({ mode }) => ({
 		host: true,
 		allowedHosts: [
 			'company-profile-fts-production.up.railway.app',
+			'preview.fts.biz.id',
 			'fujiyama-tech.railway.app',
 			'localhost',
 			'127.0.0.1',
