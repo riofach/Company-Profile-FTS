@@ -13,6 +13,12 @@ VITE_SITE_URL=https://your-app-name.railway.app
 # Google Analytics 4 Measurement ID
 # Get this from: Google Analytics > Admin > Property > Data Streams > Web
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+# EmailJS Configuration (for contact form functionality)
+# Get these from: https://www.emailjs.com/
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
 ```
 
 ### **Optional Variables:**
@@ -52,6 +58,17 @@ Klik **"New Variable"** dan tambahkan:
 - **Name**: `VITE_GA_MEASUREMENT_ID`
 - **Value**: `G-YOUR_ACTUAL_GA_ID` (dapatkan dari Google Analytics)
 
+#### **Variable 3-5: EmailJS Configuration**
+
+- **Name**: `VITE_EMAILJS_SERVICE_ID`
+- **Value**: `[Your EmailJS Service ID]`
+
+- **Name**: `VITE_EMAILJS_TEMPLATE_ID`
+- **Value**: `[Your EmailJS Template ID]`
+
+- **Name**: `VITE_EMAILJS_PUBLIC_KEY`
+- **Value**: `[Your EmailJS Public Key]`
+
 ### **Langkah 3: Redeploy**
 
 Setelah menambahkan environment variables:
@@ -80,6 +97,39 @@ Setelah menambahkan environment variables:
 
 1. Go to Railway Dashboard → Environment
 2. Update `VITE_GA_MEASUREMENT_ID` dengan actual ID
+3. Redeploy aplikasi
+
+## 📧 Setup EmailJS (Contact Form)
+
+### **Langkah 1: Create EmailJS Account**
+
+1. Go to [emailjs.com](https://www.emailjs.com)
+2. Sign up for free account
+3. Navigate ke **Email Services**
+4. Klik **"Add New Service"**
+5. Pilih **Gmail** dan ikuti setup wizard
+6. Copy **Service ID** yang dihasilkan
+
+### **Langkah 2: Create Email Template**
+
+1. Go to **Email Templates** section
+2. Klik **"Create New Template"**
+3. Pilih **Service** yang baru dibuat
+4. Design email template atau gunakan template default
+5. Save template dan copy **Template ID**
+
+### **Langkah 3: Get Public Key**
+
+1. Go to **Account** → **General** tab
+2. Copy **Public Key**
+
+### **Langkah 4: Update Railway Environment**
+
+1. Go to Railway Dashboard → Environment
+2. Add/Update environment variables:
+   - `VITE_EMAILJS_SERVICE_ID` = [Your Service ID]
+   - `VITE_EMAILJS_TEMPLATE_ID` = [Your Template ID]
+   - `VITE_EMAILJS_PUBLIC_KEY` = [Your Public Key]
 3. Redeploy aplikasi
 
 ## 📊 Monitoring Environment Variables
