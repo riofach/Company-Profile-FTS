@@ -64,7 +64,7 @@ const Contact = () => {
 			company: formValues.company || 'Not specified',
 			subject: formValues.subject,
 			message: formValues.message,
-			to_email: 'radityafachrio@gmail.com', // Testing email
+			to_email: 'fujiyamatechnologysolution@gmail.com', // Testing email
 			reply_to: formValues.email,
 		};
 
