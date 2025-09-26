@@ -27,7 +27,8 @@ const Company = () => {
 		},
 	};
 
-	const team = [
+	// Executive Team (CEO & COO)
+	const executives = [
 		{
 			name: 'Yoshihiro Nakagawa',
 			role: 'Chief Executive Officer',
@@ -42,6 +43,10 @@ const Company = () => {
 			bio: "Azmi leads the company's day-to-day operations with a sharp focus on excellence and efficiency. He is an expert in building high-performing teams and ensuring the successful delivery of our projects, guaranteeing client satisfaction.",
 			social: { linkedin: '#', github: '#' },
 		},
+	];
+
+	// Director Team
+	const directors = [
 		{
 			name: 'Naoki Yoshida',
 			role: 'Director',
@@ -54,6 +59,13 @@ const Company = () => {
 			role: 'Director',
 			image: './images/takaki.jpg',
 			bio: 'Takaki is responsible for driving our business development and strategic partnerships. He focuses on building strong, long-term relationships with clients, identifying new market opportunities for the continued growth of FTS.',
+			social: { linkedin: '#', github: '#' },
+		},
+		{
+			name: 'Takakazu Kaburaki',
+			role: 'Director',
+			image: './images/takakazu.jpg',
+			bio: 'Takakazu leads our project management and delivery teams. With a background in large-scale IT implementations, he ensures that our projects are executed flawlessly, on time, and within budget.',
 			social: { linkedin: '#', github: '#' },
 		},
 	];
@@ -101,65 +113,134 @@ const Company = () => {
 						</p>
 					</motion.div>
 
-					{/* Team Grid */}
-					<motion.div
-						variants={itemVariants}
-						className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
-					>
-						{team.map((member, index) => (
-							<motion.div
-								key={index}
-								className="group"
-								whileHover={{ scale: 1.02 }}
-								transition={{ duration: 0.3 }}
-							>
-								<div className="card-gradient p-6 rounded-xl text-center">
-									{/* Profile Image */}
-									<div className="relative mb-6">
-										<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition-colors">
-											<img
-												src={member.image}
-												alt={member.name}
-												className="w-full h-full object-cover"
-											/>
+					{/* Executive Team Section */}
+					<motion.div variants={itemVariants} className="mb-16">
+						<h3 className="text-2xl font-bold text-center mb-8">
+							Executive <span className="gradient-text">Leadership</span>
+						</h3>
+						<div className="grid md:grid-cols-2 gap-8 mb-20">
+							{executives.map((member, index) => (
+								<motion.div
+									key={index}
+									className="group"
+									whileHover={{ scale: 1.02 }}
+									transition={{ duration: 0.3 }}
+								>
+									<div className="card-gradient p-6 rounded-xl text-center">
+										{/* Profile Image */}
+										<div className="relative mb-6">
+											<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition-colors">
+												<img
+													src={member.image}
+													alt={member.name}
+													className="w-full h-full object-cover"
+												/>
+											</div>
+										</div>
+
+										{/* Member Info */}
+										<h3 className="text-lg font-bold mb-1">{member.name}</h3>
+										<p className="text-primary text-sm font-medium mb-3">{member.role}</p>
+										<p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+											{member.bio}
+										</p>
+
+										{/* Social Links */}
+										<div className="flex justify-center space-x-3">
+											{member.social.linkedin && (
+												<a
+													href={member.social.linkedin}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Linkedin className="w-4 h-4 text-primary" />
+												</a>
+											)}
+											{member.social.github && (
+												<a
+													href={member.social.github}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Github className="w-4 h-4 text-primary" />
+												</a>
+											)}
+											{member.social.twitter && (
+												<a
+													href={member.social.twitter}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Twitter className="w-4 h-4 text-primary" />
+												</a>
+											)}
 										</div>
 									</div>
+								</motion.div>
+							))}
+						</div>
+					</motion.div>
 
-									{/* Member Info */}
-									<h3 className="text-lg font-bold mb-1">{member.name}</h3>
-									<p className="text-primary text-sm font-medium mb-3">{member.role}</p>
-									<p className="text-muted-foreground text-sm mb-4 leading-relaxed">{member.bio}</p>
+					{/* Directors Team Section */}
+					<motion.div variants={itemVariants}>
+						<h3 className="text-2xl font-bold text-center mb-8">
+							Our <span className="gradient-text">Directors</span>
+						</h3>
+						<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+							{directors.map((member, index) => (
+								<motion.div
+									key={index}
+									className="group"
+									whileHover={{ scale: 1.02 }}
+									transition={{ duration: 0.3 }}
+								>
+									<div className="card-gradient p-6 rounded-xl text-center">
+										{/* Profile Image */}
+										<div className="relative mb-6">
+											<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition-colors">
+												<img
+													src={member.image}
+													alt={member.name}
+													className="w-full h-full object-cover"
+												/>
+											</div>
+										</div>
 
-									{/* Social Links */}
-									<div className="flex justify-center space-x-3">
-										{member.social.linkedin && (
-											<a
-												href={member.social.linkedin}
-												className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-											>
-												<Linkedin className="w-4 h-4 text-primary" />
-											</a>
-										)}
-										{member.social.github && (
-											<a
-												href={member.social.github}
-												className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-											>
-												<Github className="w-4 h-4 text-primary" />
-											</a>
-										)}
-										{member.social.twitter && (
-											<a
-												href={member.social.twitter}
-												className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-											>
-												<Twitter className="w-4 h-4 text-primary" />
-											</a>
-										)}
+										{/* Member Info */}
+										<h3 className="text-lg font-bold mb-1">{member.name}</h3>
+										<p className="text-primary text-sm font-medium mb-3">{member.role}</p>
+										<p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+											{member.bio}
+										</p>
+
+										{/* Social Links */}
+										<div className="flex justify-center space-x-3">
+											{member.social.linkedin && (
+												<a
+													href={member.social.linkedin}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Linkedin className="w-4 h-4 text-primary" />
+												</a>
+											)}
+											{member.social.github && (
+												<a
+													href={member.social.github}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Github className="w-4 h-4 text-primary" />
+												</a>
+											)}
+											{member.social.twitter && (
+												<a
+													href={member.social.twitter}
+													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
+												>
+													<Twitter className="w-4 h-4 text-primary" />
+												</a>
+											)}
+										</div>
 									</div>
-								</div>
-							</motion.div>
-						))}
+								</motion.div>
+							))}
+						</div>
 					</motion.div>
 
 					{/* Company Values */}
