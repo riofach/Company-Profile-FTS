@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Send, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
 	const ref = useRef(null);
@@ -37,16 +38,78 @@ const Contact = () => {
 		e.preventDefault();
 		setIsSubmitting(true);
 
-		// Simulate form submission
-		await new Promise((resolve) => setTimeout(resolve, 2000));
+		const formData = new FormData(e.currentTarget);
 
-		toast({
-			title: 'Message Sent!',
-			description: "Thank you for contacting us. We'll get back to you soon.",
-		});
+		// Debug logging - check form data
+		const formValues = {
+			firstName: formData.get('firstName'),
+			lastName: formData.get('lastName'),
+			email: formData.get('email'),
+			company: formData.get('company'),
+			subject: formData.get('subject'),
+			message: formData.get('message'),
+		};
 
-		setIsSubmitting(false);
-		(e.target as HTMLFormElement).reset();
+		console.log('Form Data Debug:', formValues);
+
+		// EmailJS configuration - these should be in environment variables
+		const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+		const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+		const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+		// Prepare email data
+		const emailData = {
+			from_name: `${formValues.firstName} ${formValues.lastName}`,
+			from_email: formValues.email,
+			company: formValues.company || 'Not specified',
+			subject: formValues.subject,
+			message: formValues.message,
+			to_email: 'radityafachrio@gmail.com', // Testing email
+			reply_to: formValues.email,
+		};
+
+		console.log('Email Data to be sent:', emailData);
+
+		try {
+			// Send email using EmailJS
+			const result = await emailjs.send(serviceId, templateId, emailData, publicKey);
+
+			console.log('EmailJS Result:', result);
+
+			if (result.status === 200) {
+				toast({
+					title: 'Message Sent Successfully!',
+					description:
+						"Thank you for contacting Fujiyama Technology Solutions. We'll get back to you shortly.",
+				});
+
+				console.log('Email sent successfully to:', emailData.to_email);
+
+				// Reset form
+				(e.target as HTMLFormElement).reset();
+			}
+		} catch (error: unknown) {
+			console.error('EmailJS Error:', error);
+			console.error('Form data that failed to send:', formValues);
+			console.error('Email data that failed to send:', emailData);
+
+			// More specific error messages
+			let errorMessage = 'Failed to send message. Please try again.';
+
+			if (error && typeof error === 'object' && 'text' in error) {
+				errorMessage = `Email service error: ${String(error.text)}`;
+			} else if (error && typeof error === 'object' && 'message' in error) {
+				errorMessage = `Error: ${String(error.message)}`;
+			}
+
+			toast({
+				title: 'Failed to Send Message',
+				description: errorMessage,
+				variant: 'destructive',
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const contactInfo = [
@@ -110,6 +173,7 @@ const Contact = () => {
 											</label>
 											<Input
 												id="firstName"
+												name="firstName"
 												type="text"
 												required
 												className="w-full"
@@ -122,6 +186,7 @@ const Contact = () => {
 											</label>
 											<Input
 												id="lastName"
+												name="lastName"
 												type="text"
 												required
 												className="w-full"
@@ -136,6 +201,7 @@ const Contact = () => {
 										</label>
 										<Input
 											id="email"
+											name="email"
 											type="email"
 											required
 											className="w-full"
@@ -147,7 +213,13 @@ const Contact = () => {
 										<label htmlFor="company" className="block text-sm font-medium mb-2">
 											Company (Optional)
 										</label>
-										<Input id="company" type="text" className="w-full" placeholder="Your Company" />
+										<Input
+											id="company"
+											name="company"
+											type="text"
+											className="w-full"
+											placeholder="Your Company"
+										/>
 									</div>
 
 									<div>
@@ -156,6 +228,7 @@ const Contact = () => {
 										</label>
 										<Input
 											id="subject"
+											name="subject"
 											type="text"
 											required
 											className="w-full"
@@ -169,6 +242,7 @@ const Contact = () => {
 										</label>
 										<Textarea
 											id="message"
+											name="message"
 											required
 											className="w-full min-h-[120px]"
 											placeholder="Tell us about your project requirements..."
