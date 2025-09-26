@@ -63,7 +63,7 @@ const About = () => {
 					{/* Section Header */}
 					<motion.div variants={itemVariants} className="text-center mb-16">
 						<h2 className="text-4xl md:text-5xl font-bold mb-6">
-							About <span className="gradient-text">Fujiyama Technology Solutions</span>
+							About <span className="gradient-text">FTS</span>
 						</h2>
 						<p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
 							<strong>Fujiyama Technology Solutions (FTS)</strong> is a{' '}

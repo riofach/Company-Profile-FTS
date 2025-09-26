@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useTheme } from '@/components/theme-provider';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { useTheme, type Theme } from '@/components/theme-provider';
+import { Moon, Sun, Menu, X, Monitor, Clock } from 'lucide-react';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
 
 // Komponen navigasi utama yang menampilkan brand/logo FTS, kontrol tema,
@@ -11,6 +11,46 @@ const Navigation = () => {
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const { theme, setTheme } = useTheme();
+
+	// Function to get the next theme in cycle: light -> dark -> system -> auto -> light...
+	const getNextTheme = (currentTheme: string): Theme => {
+		const themeCycle: Theme[] = ['light', 'dark', 'system', 'auto'];
+		const currentIndex = themeCycle.indexOf(currentTheme as Theme);
+		const nextIndex = (currentIndex + 1) % themeCycle.length;
+		return themeCycle[nextIndex];
+	};
+
+	// Function to get theme icon
+	const getThemeIcon = (currentTheme: string) => {
+		switch (currentTheme) {
+			case 'light':
+				return <Sun className="h-5 w-5" />;
+			case 'dark':
+				return <Moon className="h-5 w-5" />;
+			case 'system':
+				return <Monitor className="h-5 w-5" />;
+			case 'auto':
+				return <Clock className="h-5 w-5" />;
+			default:
+				return <Sun className="h-5 w-5" />;
+		}
+	};
+
+	// Function to get theme label
+	const getThemeLabel = (currentTheme: string) => {
+		switch (currentTheme) {
+			case 'light':
+				return 'Light Mode';
+			case 'dark':
+				return 'Dark Mode';
+			case 'system':
+				return 'System';
+			case 'auto':
+				return 'Auto (Indonesian Time)';
+			default:
+				return 'Light Mode';
+		}
+	};
 
 	const navItems = [
 		{ name: 'Home', href: '#home' },
@@ -89,10 +129,11 @@ const Navigation = () => {
 						<Button
 							variant="ghost"
 							size="icon"
-							onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+							onClick={() => setTheme(getNextTheme(theme))}
 							className="hover:bg-primary/10"
+							title={getThemeLabel(theme)}
 						>
-							{theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+							{getThemeIcon(theme)}
 						</Button>
 
 						{/* Mobile Menu Button */}
