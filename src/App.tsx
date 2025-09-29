@@ -9,6 +9,7 @@ import { Analytics, PerformanceMonitor } from '@/components/Analytics';
 // Pembungkus global aplikasi: QueryClient, ThemeProvider, Tooltip, Toaster, dan Router.
 import Index from './pages/Index';
 import Projects from './pages/Projects';
+import AllProjects from './pages/AllProjects';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -47,6 +48,20 @@ const App = () => (
 										type="website"
 									/>
 									<Projects />
+								</>
+							}
+						/>
+						<Route
+							path="/projects/all"
+							element={
+								<>
+									<SEO
+										title="All Projects - Complete Portfolio"
+										description="Complete showcase of all our technology projects and digital solutions. Web development, mobile apps, and software development portfolio."
+										keywords="FTS All Projects, Complete Portfolio, Web Development Showcase, Mobile Apps Portfolio, Software Development Projects"
+										type="website"
+									/>
+									<AllProjects />
 								</>
 							}
 						/>
