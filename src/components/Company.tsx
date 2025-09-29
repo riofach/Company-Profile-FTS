@@ -103,7 +103,7 @@ const Company = () => {
 					className="max-w-6xl mx-auto"
 				>
 					{/* Section Header */}
-					<motion.div variants={itemVariants} className="text-center mb-16">
+					<motion.div variants={itemVariants} className="text-center mb-12">
 						<h2 className="text-4xl md:text-5xl font-bold mb-6">
 							Meet Our <span className="gradient-text">Team</span>
 						</h2>
@@ -114,11 +114,11 @@ const Company = () => {
 					</motion.div>
 
 					{/* Executive Team Section */}
-					<motion.div variants={itemVariants} className="mb-16">
+					<motion.div variants={itemVariants} className="mb-12">
 						<h3 className="text-2xl font-bold text-center mb-8">
 							Executive <span className="gradient-text">Leadership</span>
 						</h3>
-						<div className="grid md:grid-cols-2 gap-8 mb-20">
+						<div className="grid md:grid-cols-2 gap-8 mb-12">
 							{executives.map((member, index) => (
 								<motion.div
 									key={index}
@@ -245,7 +245,7 @@ const Company = () => {
 
 					{/* Company Values */}
 					<motion.div variants={itemVariants}>
-						<h3 className="text-3xl font-bold text-center mb-12">
+						<h3 className="text-3xl font-bold text-center my-8">
 							Our <span className="gradient-text">Values</span>
 						</h3>
 
