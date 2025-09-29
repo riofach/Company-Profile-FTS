@@ -2,12 +2,11 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ExternalLink, Github, Grid3X3 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Github } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
 
-const Projects = () => {
-	// All projects data
+const AllProjects = () => {
 	const allProjects = [
 		{
 			title: 'Tire Reservation',
@@ -15,7 +14,7 @@ const Projects = () => {
 				'Advanced tire reservation and inventory management system with real-time availability tracking and automated booking processes. Features comprehensive tire catalog, customer management, and seamless reservation workflow.',
 			image: '/images/projects/tire.png',
 			tags: ['Laravel', 'PostgreSQL', 'Reservation'],
-			liveUrl: 'https://tire.fts.biz.id',
+			liveUrl: 'https://tires.fts.biz.id',
 			githubUrl: '#',
 		},
 		{
@@ -44,19 +43,6 @@ const Projects = () => {
 			tags: ['Laravel', 'MySQL', 'Hall', 'Event'],
 			liveUrl: 'https://ebilahall.fts.biz.id',
 			githubUrl: '#',
-		},
-	];
-
-	// Show only latest 3 projects
-	const latestProjects = allProjects.slice(0, 3);
-	const remainingProjects = allProjects.slice(3);
-
-	const projectCategories = [
-		{
-			id: 'web-development',
-			title: 'Custom Web Development',
-			description: 'Full-stack web applications built with modern technologies',
-			projects: latestProjects,
 		},
 	];
 
@@ -100,19 +86,15 @@ const Projects = () => {
 						</Link>
 						<div className="flex items-center space-x-4">
 							<Button variant="outline" asChild>
+								<Link to="/projects" className="flex items-center space-x-2">
+									<ArrowLeft className="w-4 h-4" />
+									<span>Latest Projects</span>
+								</Link>
+							</Button>
+							<Button variant="outline" asChild>
 								<Link to="/" className="flex items-center space-x-2">
 									<ArrowLeft className="w-4 h-4" />
 									<span>Back to Home</span>
-								</Link>
-							</Button>
-							<Button
-								variant="default"
-								asChild
-								className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-							>
-								<Link to="/projects/all" className="flex items-center space-x-2">
-									<Grid3X3 className="w-4 h-4" />
-									<span>All Projects ({allProjects.length})</span>
 								</Link>
 							</Button>
 						</div>
@@ -130,110 +112,110 @@ const Projects = () => {
 						className="text-center max-w-4xl mx-auto px-4"
 					>
 						<h1 className="text-5xl md:text-6xl font-bold mb-6">
-							Our <span className="gradient-text">Project Portfolio</span>
+							All <span className="gradient-text">Projects</span>
 						</h1>
 						<p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-							Explore our latest projects showcasing innovative digital solutions across{' '}
+							Complete showcase of our innovative digital solutions across{' '}
 							<strong>web design</strong>,<strong>custom development</strong>, and{' '}
-							<strong>mobile applications</strong>. From enterprise software to consumer apps,
-							discover how <strong>Fujiyama Technology Solutions</strong> transforms ideas into
-							successful digital products for businesses across Indonesia.
+							<strong>mobile applications</strong>. Explore our full portfolio of successful
+							projects that demonstrate <strong>Fujiyama Technology Solutions</strong>' expertise in
+							transforming ideas into exceptional digital products.
 						</p>
-						<div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground mb-6">
-							<span>Latest {latestProjects.length} Projects</span>
+						<div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
+							<span>Total Projects: {allProjects.length}</span>
 							<span>•</span>
-							<Link to="/projects/all" className="text-primary hover:underline">
-								View All {allProjects.length} Projects
+							<Link to="/projects" className="text-primary hover:underline">
+								View Latest 3 Projects
 							</Link>
 						</div>
 					</motion.div>
 				</div>
 			</section>
 
-			{/* Projects Sections */}
+			{/* All Projects Grid */}
 			<motion.div
 				variants={containerVariants}
 				initial="hidden"
 				animate="visible"
 				className="container mx-auto px-4 pb-20"
 			>
-				{projectCategories.map((category, categoryIndex) => (
-					<motion.section key={category.id} variants={itemVariants} className="mb-20">
-						<div className="text-center mb-12">
-							<h2 className="text-3xl md:text-4xl font-bold mb-4">{category.title}</h2>
-							<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-								{category.description}
-							</p>
-						</div>
+				{/* Projects Grid */}
+				<motion.section variants={itemVariants} className="mb-20">
+					<div className="text-center mb-12">
+						<h2 className="text-3xl md:text-4xl font-bold mb-4">Complete Project Portfolio</h2>
+						<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+							Explore all our web development projects showcasing modern technologies and innovative
+							solutions
+						</p>
+					</div>
 
-						<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-							{category.projects.map((project, projectIndex) => (
-								<motion.div
-									key={projectIndex}
-									variants={itemVariants}
-									whileHover={{ y: -5 }}
-									transition={{ duration: 0.3 }}
-								>
-									<Card className="overflow-hidden group hover:shadow-lg transition-all duration-300">
-										<div className="relative overflow-hidden">
-											<img
-												src={project.image}
-												alt={project.title}
-												className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-											/>
-											<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-											<div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-												<Button
-													size="sm"
-													variant="secondary"
-													className="h-8 w-8 p-0"
-													onClick={(e) => {
-														e.stopPropagation();
-														if (project.liveUrl && project.liveUrl !== '#') {
-															window.open(project.liveUrl, '_blank', 'noopener,noreferrer');
-														}
-													}}
-													title="View Live Demo"
-												>
-													<ExternalLink className="w-4 h-4" />
-												</Button>
-												<Button
-													size="sm"
-													variant="secondary"
-													className="h-8 w-8 p-0"
-													onClick={(e) => {
-														e.stopPropagation();
-														if (project.githubUrl && project.githubUrl !== '#') {
-															window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
-														}
-													}}
-													title="View Source Code"
-												>
-													<Github className="w-4 h-4" />
-												</Button>
-											</div>
+					<div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+						{allProjects.map((project, projectIndex) => (
+							<motion.div
+								key={projectIndex}
+								variants={itemVariants}
+								whileHover={{ y: -5 }}
+								transition={{ duration: 0.3 }}
+							>
+								<Card className="overflow-hidden group hover:shadow-lg transition-all duration-300 h-full">
+									<div className="relative overflow-hidden">
+										<img
+											src={project.image}
+											alt={project.title}
+											className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+										/>
+										<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										<div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+											<Button
+												size="sm"
+												variant="secondary"
+												className="h-8 w-8 p-0"
+												onClick={(e) => {
+													e.stopPropagation();
+													if (project.liveUrl && project.liveUrl !== '#') {
+														window.open(project.liveUrl, '_blank', 'noopener,noreferrer');
+													}
+												}}
+												title="View Live Demo"
+											>
+												<ExternalLink className="w-4 h-4" />
+											</Button>
+											<Button
+												size="sm"
+												variant="secondary"
+												className="h-8 w-8 p-0"
+												onClick={(e) => {
+													e.stopPropagation();
+													if (project.githubUrl && project.githubUrl !== '#') {
+														window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
+													}
+												}}
+												title="View Source Code"
+											>
+												<Github className="w-4 h-4" />
+											</Button>
 										</div>
-										<div className="p-6">
-											<h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-												{project.title}
-											</h3>
-											<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-												{project.description}
-											</p>
-											<div className="flex flex-wrap gap-2">
-												{project.tags.map((tag, tagIndex) => (
-													<Badge key={tagIndex} variant="secondary" className="text-xs">
-														{tag}
-													</Badge>
-												))}
-											</div>
+									</div>
+									<div className="p-6 flex flex-col h-full">
+										<h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+											{project.title}
+										</h3>
+										<p className="text-muted-foreground mb-4 text-sm leading-relaxed flex-grow">
+											{project.description}
+										</p>
+										<div className="flex flex-wrap gap-2 mt-auto">
+											{project.tags.map((tag, tagIndex) => (
+												<Badge key={tagIndex} variant="secondary" className="text-xs">
+													{tag}
+												</Badge>
+											))}
 										</div>
-									</Card>
-								</motion.div>
-							))}
-						</div>
-					</motion.section>
-				))}
+									</div>
+								</Card>
+							</motion.div>
+						))}
+					</div>
+				</motion.section>
 
 				{/* CTA Section */}
 				<motion.section variants={itemVariants} className="text-center py-16">
@@ -257,4 +239,4 @@ const Projects = () => {
 	);
 };
 
-export default Projects;
+export default AllProjects;
