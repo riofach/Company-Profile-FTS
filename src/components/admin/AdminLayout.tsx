@@ -17,10 +17,12 @@ import {
 	Moon,
 	Monitor,
 	Clock,
+	User as UserIcon,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
 import { useTheme, type Theme } from '@/components/theme-provider';
+import { useAuth } from '@/context/AuthContext';
 
 // Interface untuk navigation item
 interface NavItem {
@@ -35,9 +37,15 @@ interface NavItem {
 // Komponen AdminLayout untuk menyediakan layout konsisten untuk admin pages
 // Menyediakan sidebar navigation dan header dengan theme control
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+	// Auth context
+	const { user, logout, isAuthenticated, isLoading } = useAuth();
+
+	// Theme and navigation
 	const { theme, setTheme } = useTheme();
 	const location = useLocation();
 	const navigate = useNavigate();
+
+	// State
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
@@ -81,33 +89,46 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	// Navigation items configuration
-	const navItems: NavItem[] = [
-		{
-			id: 'dashboard',
-			label: 'Dashboard',
-			icon: <Home className="w-4 h-4" />,
-			path: '/admin/dashboard',
-		},
-		{
-			id: 'projects',
-			label: 'Projects',
-			icon: <FolderOpen className="w-4 h-4" />,
-			path: '/admin/projects',
-		},
-		{
-			id: 'users',
-			label: 'User Management',
-			icon: <Users className="w-4 h-4" />,
-			path: '/admin/users',
-		},
-		{
-			id: 'activity',
-			label: 'Activity Logs',
-			icon: <Activity className="w-4 h-4" />,
-			path: '/admin/activity-logs',
-		},
-	];
+	// Navigation items configuration based on user role
+	const getNavItems = (): NavItem[] => {
+		const baseItems: NavItem[] = [
+			{
+				id: 'dashboard',
+				label: 'Dashboard',
+				icon: <Home className="w-4 h-4" />,
+				path: '/admin/dashboard',
+			},
+			{
+				id: 'projects',
+				label: 'Projects',
+				icon: <FolderOpen className="w-4 h-4" />,
+				path: '/admin/projects',
+			},
+		];
+
+		// Add admin-only items for super_admin
+		if (user?.role === 'super_admin') {
+			return [
+				...baseItems,
+				{
+					id: 'users',
+					label: 'User Management',
+					icon: <Users className="w-4 h-4" />,
+					path: '/admin/users',
+				},
+				{
+					id: 'activity',
+					label: 'Activity Logs',
+					icon: <Activity className="w-4 h-4" />,
+					path: '/admin/activity-logs',
+				},
+			];
+		}
+
+		return baseItems;
+	};
+
+	const navItems = getNavItems();
 
 	// Toggle sidebar expansion
 	const toggleExpand = (itemId: string) => {
@@ -122,10 +143,47 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	// Handle logout
-	const handleLogout = () => {
-		// TODO: Implement logout logic
+	const handleLogout = async () => {
+		await logout();
 		navigate('/login-admin');
 	};
+
+	// Check authentication
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-center">
+					<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+					<p className="text-muted-foreground">Loading...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (!isAuthenticated) {
+		// Redirect to login if not authenticated
+		navigate('/login-admin');
+		return null;
+	}
+
+	// Check if user tries to access restricted routes
+	const checkRoutePermission = () => {
+		const restrictedRoutes = ['/admin/users', '/admin/activity-logs'];
+		const isRestrictedRoute = restrictedRoutes.some((route) => location.pathname.startsWith(route));
+
+		if (isRestrictedRoute && user?.role !== 'super_admin') {
+			// Redirect to dashboard if admin tries to access super_admin routes
+			navigate('/admin/dashboard');
+			return false;
+		}
+
+		return true;
+	};
+
+	// Check route permissions
+	if (!checkRoutePermission()) {
+		return null;
+	}
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -325,6 +383,17 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 						</div>
 
 						<div className="flex items-center space-x-2">
+							{/* User Info */}
+							<div className="hidden sm:flex items-center space-x-2 mr-4">
+								<div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+									<UserIcon className="w-4 h-4 text-primary" />
+								</div>
+								<div className="hidden md:block">
+									<p className="text-sm font-medium">{user?.name}</p>
+									<p className="text-xs text-muted-foreground">{user?.role?.replace('_', ' ')}</p>
+								</div>
+							</div>
+
 							{/* View Site Button */}
 							<Button variant="outline" asChild>
 								<Link to="/" className="flex items-center space-x-2">

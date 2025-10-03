@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,76 +6,78 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, FolderOpen, BarChart3, Users, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME } from '@/lib/brand';
-
-// Interface untuk tipe data project
-interface Project {
-	id: string;
-	title: string;
-	description: string;
-	tags: string[];
-	image: string;
-	liveUrl: string;
-	githubUrl: string;
-	createdAt: string;
-	updatedAt: string;
-}
+import { projectsApi, adminApi, type Project, type DashboardStats } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
 
 // Komponen Admin Dashboard untuk management projects
 // Menyediakan interface untuk CRUD operations pada projects
 const AdminDashboard = () => {
-	const [projects, setProjects] = useState<Project[]>([
-		{
-			id: '1',
-			title: 'Tire Reservation',
-			description:
-				'Advanced tire reservation and inventory management system with real-time availability tracking and automated booking processes. Features comprehensive tire catalog, customer management, and seamless reservation workflow.',
-			tags: ['Laravel', 'PostgreSQL', 'Reservation'],
-			image: '/images/projects/tire.png',
-			liveUrl: 'https://tires.fts.biz.id',
-			githubUrl: '#',
-			createdAt: '2024-01-15',
-			updatedAt: '2024-01-15',
-		},
-		{
-			id: '2',
-			title: 'Building Maintenance',
-			description:
-				'Comprehensive building maintenance management system with work order tracking, preventive maintenance scheduling, and facility management. Includes asset tracking, maintenance history, and automated reporting for building operations.',
-			tags: ['Laravel', 'MySQL', 'Building', 'Maintenance'],
-			image: '/images/projects/bill-maintenance.png',
-			liveUrl: 'https://bill-maintenance.fts.biz.id',
-			githubUrl: '#',
-			createdAt: '2024-01-20',
-			updatedAt: '2024-01-20',
-		},
-		{
-			id: '3',
-			title: 'Car Repair Shop',
-			description:
-				'Complete car repair shop management system with appointment scheduling, service tracking, inventory management, and customer relationship management. Features repair history, billing integration, and workshop workflow optimization.',
-			tags: ['Laravel', 'MySQL', 'Car Repair', 'Shop'],
-			image: '/images/projects/car-repair.png',
-			liveUrl: 'https://car-repair.fts.biz.id',
-			githubUrl: '#',
-			createdAt: '2024-01-25',
-			updatedAt: '2024-01-25',
-		},
-		{
-			id: '4',
-			title: 'Ebilahall',
-			description:
-				'Comprehensive event hall management system with booking management, event scheduling, capacity planning, and facility coordination. Features event calendar, customer management, and automated booking confirmations for hall operations.',
-			tags: ['Laravel', 'MySQL', 'Hall', 'Event'],
-			image: '/images/projects/ebilahall.png',
-			liveUrl: 'https://ebilahall.fts.biz.id',
-			githubUrl: '#',
-			createdAt: '2024-02-01',
-			updatedAt: '2024-02-01',
-		},
-	]);
+	// Hooks
+	const { toast } = useToast();
 
+	// State
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [stats, setStats] = useState<DashboardStats>({
+		totalProjects: 0,
+		totalUsers: 0,
+		totalTags: 0,
+		recentProjects: 0,
+		recentActivity: 0,
+	});
 	const [searchTerm, setSearchTerm] = useState('');
+	const [isLoading, setIsLoading] = useState(true);
 	const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+	// Load data on mount
+	useEffect(() => {
+		loadDashboardData();
+	}, []);
+
+	// Load dashboard data
+	const loadDashboardData = async () => {
+		setIsLoading(true);
+		try {
+			// Load projects first
+			const projectsResponse = await projectsApi.getAll();
+
+			if (projectsResponse.success && projectsResponse.data) {
+				// Ensure projects data is an array
+				const projectsArray = Array.isArray(projectsResponse.data) ? projectsResponse.data : [];
+				setProjects(projectsArray);
+
+				// Calculate stats from projects data since admin/stats endpoint doesn't exist
+				const calculatedStats: DashboardStats = {
+					totalProjects: projectsArray.length,
+					totalUsers: 0, // Will be loaded separately if needed
+					totalTags: [...new Set(projectsArray.flatMap((p) => p.tags || []))].length,
+					recentProjects: projectsArray.filter((p) => {
+						const projectDate = new Date(p.createdAt);
+						const thirtyDaysAgo = new Date();
+						thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+						return projectDate > thirtyDaysAgo;
+					}).length,
+					recentActivity: 0, // Will be loaded separately if needed
+				};
+
+				setStats(calculatedStats);
+			} else {
+				toast({
+					title: 'Error',
+					description: projectsResponse.error || 'Failed to load projects',
+					variant: 'destructive',
+				});
+			}
+		} catch (error) {
+			console.error('Failed to load dashboard data:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	// Animation variants
 	const containerVariants = {
@@ -99,38 +101,58 @@ const AdminDashboard = () => {
 	};
 
 	// Filter projects based on search term
-	const filteredProjects = projects.filter(
-		(project) =>
-			project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			project.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-	);
+	const filteredProjects = Array.isArray(projects)
+		? projects.filter(
+				(project) =>
+					project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					project.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+		  )
+		: [];
 
 	// Handle delete project
 	const handleDeleteProject = async (projectId: string) => {
 		setIsDeleting(projectId);
 
-		// Simulate API call delay
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		try {
+			const response = await projectsApi.delete(projectId);
 
-		setProjects((prev) => prev.filter((project) => project.id !== projectId));
-		setIsDeleting(null);
-
-		// TODO: Show success toast notification
-		console.log('Project deleted successfully');
+			if (response.success) {
+				setProjects((prev) => prev.filter((project) => project.id !== projectId));
+				toast({
+					title: 'Success',
+					description: 'Project deleted successfully',
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to delete project',
+					variant: 'destructive',
+				});
+			}
+		} catch (error) {
+			console.error('Failed to delete project:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
+		} finally {
+			setIsDeleting(null);
+		}
 	};
 
-	// Stats data
-	const stats = {
-		totalProjects: projects.length,
-		totalTags: [...new Set(projects.flatMap((p) => p.tags))].length,
-		recentProjects: projects.filter((p) => {
-			const projectDate = new Date(p.createdAt);
-			const thirtyDaysAgo = new Date();
-			thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-			return projectDate > thirtyDaysAgo;
-		}).length,
-	};
+	// Loading state
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-center">
+					<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+					<p className="text-muted-foreground">Loading dashboard...</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -168,10 +190,10 @@ const AdminDashboard = () => {
 					<Card className="p-6">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Total Tags</p>
-								<p className="text-3xl font-bold">{stats.totalTags}</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Users</p>
+								<p className="text-3xl font-bold">{stats.totalUsers}</p>
 							</div>
-							<BarChart3 className="h-8 w-8 text-primary" />
+							<Users className="h-8 w-8 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
@@ -180,10 +202,10 @@ const AdminDashboard = () => {
 					<Card className="p-6">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Recent Projects</p>
-								<p className="text-3xl font-bold">{stats.recentProjects}</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Tags</p>
+								<p className="text-3xl font-bold">{stats.totalTags}</p>
 							</div>
-							<FileText className="h-8 w-8 text-primary" />
+							<BarChart3 className="h-8 w-8 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
@@ -254,7 +276,7 @@ const AdminDashboard = () => {
 											{/* Project Image */}
 											<div className="lg:w-48 flex-shrink-0">
 												<img
-													src={project.image}
+													src={project.imageUrl || '/placeholder.svg'}
 													alt={project.title}
 													className="w-full h-32 lg:h-full object-cover rounded-lg"
 												/>
