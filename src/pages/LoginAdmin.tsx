@@ -5,24 +5,32 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Lock, User, Shield } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
 import { useTheme } from '@/components/theme-provider';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 // Komponen Login Admin untuk dashboard internal FTS
 // Menyediakan interface authentication yang aman dan konsisten dengan brand theme
 const LoginAdmin = () => {
+	// Auth context
+	const { login } = useAuth();
+
+	// Form state
 	const [showPassword, setShowPassword] = useState(false);
 	const [formData, setFormData] = useState({
-		username: '',
+		email: '',
 		password: '',
 	});
 	const [errors, setErrors] = useState({
-		username: '',
+		email: '',
 		password: '',
 	});
 	const [isLoading, setIsLoading] = useState(false);
+	const [loginError, setLoginError] = useState('');
+
+	// Hooks
 	const { theme } = useTheme();
 	const navigate = useNavigate();
 
@@ -50,13 +58,16 @@ const LoginAdmin = () => {
 	// Form validation
 	const validateForm = () => {
 		const newErrors = {
-			username: '',
+			email: '',
 			password: '',
 		};
 		let isValid = true;
 
-		if (!formData.username.trim()) {
-			newErrors.username = 'Username is required';
+		if (!formData.email.trim()) {
+			newErrors.email = 'Email is required';
+			isValid = false;
+		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+			newErrors.email = 'Invalid email format';
 			isValid = false;
 		}
 
@@ -79,38 +90,37 @@ const LoginAdmin = () => {
 		if (!validateForm()) return;
 
 		setIsLoading(true);
+		setLoginError('');
 
-		// Simulate API call (nanti akan terhubung dengan backend)
 		try {
-			// Mock authentication delay
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			// Use auth context login function
+			const result = await login(formData.email, formData.password);
 
-			// TODO: Implement actual API call to backend
-			// const response = await fetch('/api/auth/login', {
-			//   method: 'POST',
-			//   headers: { 'Content-Type': 'application/json' },
-			//   body: JSON.stringify(formData)
-			// });
-
-			// Mock success response
-			console.log('Login successful:', formData);
-
-			// Redirect to admin dashboard
-			navigate('/admin/dashboard');
+			if (result.success) {
+				// Redirect to admin dashboard
+				navigate('/admin/dashboard');
+			} else {
+				// Show error message
+				setLoginError(result.error || 'Login failed. Please try again.');
+			}
 		} catch (error) {
-			console.error('Login failed:', error);
-			// TODO: Show error message
+			console.error('Login error:', error);
+			setLoginError('An unexpected error occurred. Please try again.');
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	// Handle input changes
-	const handleInputChange = (field: string, value: string) => {
+	const handleInputChange = (field: keyof typeof formData, value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 		// Clear error when user starts typing
 		if (errors[field as keyof typeof errors]) {
 			setErrors((prev) => ({ ...prev, [field]: '' }));
+		}
+		// Clear login error when user starts typing
+		if (loginError) {
+			setLoginError('');
 		}
 	};
 
@@ -156,6 +166,15 @@ const LoginAdmin = () => {
 							</div>
 						</div>
 
+						{/* Login Error Alert */}
+						{loginError && (
+							<Alert className="mb-6 bg-destructive/5 border-destructive/20">
+								<AlertDescription className="text-sm text-destructive">
+									{loginError}
+								</AlertDescription>
+							</Alert>
+						)}
+
 						{/* Alert for demo purposes */}
 						<Alert className="mb-6 bg-primary/5 border-primary/20">
 							<AlertDescription className="text-sm">
@@ -165,26 +184,24 @@ const LoginAdmin = () => {
 
 						{/* Login Form */}
 						<form onSubmit={handleSubmit} className="space-y-6">
-							{/* Username Field */}
+							{/* Email Field */}
 							<div className="space-y-2">
-								<Label htmlFor="username" className="text-sm font-medium">
-									Username
+								<Label htmlFor="email" className="text-sm font-medium">
+									Email
 								</Label>
 								<div className="relative">
-									<User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+									<Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
 									<Input
-										id="username"
-										type="text"
-										placeholder="Enter your username"
-										value={formData.username}
-										onChange={(e) => handleInputChange('username', e.target.value)}
+										id="email"
+										type="email"
+										placeholder="Enter your email"
+										value={formData.email}
+										onChange={(e) => handleInputChange('email', e.target.value)}
 										className="pl-10"
 										disabled={isLoading}
 									/>
 								</div>
-								{errors.username && (
-									<p className="text-xs text-destructive mt-1">{errors.username}</p>
-								)}
+								{errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
 							</div>
 
 							{/* Password Field */}

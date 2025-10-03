@@ -8,31 +8,25 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Save, X, Upload, Image as ImageIcon } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-// Interface untuk tipe data project
-interface Project {
-	id?: string;
-	title: string;
-	description: string;
-	tags: string[];
-	image: string;
-	liveUrl: string;
-	githubUrl: string;
-}
+import { projectsApi, uploadApi, type Project } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
 
 // Komponen ProjectForm untuk add/edit projects
 // Menyediakan interface form untuk CRUD operations pada projects
 const ProjectForm = () => {
+	// Hooks
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const { toast } = useToast();
 	const isEditing = Boolean(id);
 
 	// Form state
-	const [formData, setFormData] = useState<Project>({
+	const [formData, setFormData] = useState<
+		Omit<Project, 'id' | 'createdBy' | 'createdAt' | 'updatedAt'>
+	>({
 		title: '',
 		description: '',
 		tags: [],
-		image: '',
 		liveUrl: '',
 		githubUrl: '',
 	});
@@ -43,68 +37,55 @@ const ProjectForm = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [imageFile, setImageFile] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string>('');
-
-	// Mock data untuk edit mode
-	const mockProjects: Record<string, Project> = {
-		'1': {
-			id: '1',
-			title: 'Tire Reservation',
-			description:
-				'Advanced tire reservation and inventory management system with real-time availability tracking and automated booking processes. Features comprehensive tire catalog, customer management, and seamless reservation workflow.',
-			tags: ['Laravel', 'PostgreSQL', 'Reservation'],
-			image: '/images/projects/tire.png',
-			liveUrl: 'https://tires.fts.biz.id',
-			githubUrl: '#',
-		},
-		'2': {
-			id: '2',
-			title: 'Building Maintenance',
-			description:
-				'Comprehensive building maintenance management system with work order tracking, preventive maintenance scheduling, and facility management. Includes asset tracking, maintenance history, and automated reporting for building operations.',
-			tags: ['Laravel', 'MySQL', 'Building', 'Maintenance'],
-			image: '/images/projects/bill-maintenance.png',
-			liveUrl: 'https://bill-maintenance.fts.biz.id',
-			githubUrl: '#',
-		},
-		'3': {
-			id: '3',
-			title: 'Car Repair Shop',
-			description:
-				'Complete car repair shop management system with appointment scheduling, service tracking, inventory management, and customer relationship management. Features repair history, billing integration, and workshop workflow optimization.',
-			tags: ['Laravel', 'MySQL', 'Car Repair', 'Shop'],
-			image: '/images/projects/car-repair.png',
-			liveUrl: 'https://car-repair.fts.biz.id',
-			githubUrl: '#',
-		},
-		'4': {
-			id: '4',
-			title: 'Ebilahall',
-			description:
-				'Comprehensive event hall management system with booking management, event scheduling, capacity planning, and facility coordination. Features event calendar, customer management, and automated booking confirmations for hall operations.',
-			tags: ['Laravel', 'MySQL', 'Hall', 'Event'],
-			image: '/images/projects/ebilahall.png',
-			liveUrl: 'https://ebilahall.fts.biz.id',
-			githubUrl: '#',
-		},
-	};
+	const [isUploading, setIsUploading] = useState(false);
 
 	// Load project data for edit mode
 	useEffect(() => {
 		if (isEditing && id) {
-			setIsLoading(true);
-			// Simulate API call
-			setTimeout(() => {
-				const project = mockProjects[id];
-				if (project) {
-					setFormData(project);
-				} else {
-					// Project not found
-					navigate('/admin/dashboard');
-				}
-				setIsLoading(false);
-			}, 500);
+			loadProject(id);
 		}
 	}, [isEditing, id, navigate]);
+
+	// Load project data
+	const loadProject = async (projectId: string) => {
+		setIsLoading(true);
+		try {
+			const response = await projectsApi.getById(projectId);
+
+			if (response.success && response.data) {
+				const project = response.data;
+				setFormData({
+					title: project.title,
+					description: project.description,
+					tags: project.tags,
+					liveUrl: project.liveUrl || '',
+					githubUrl: project.githubUrl || '',
+				});
+
+				// Set image preview if imageUrl exists
+				if (project.imageUrl) {
+					setImagePreview(project.imageUrl);
+				}
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Project not found',
+					variant: 'destructive',
+				});
+				navigate('/admin/dashboard');
+			}
+		} catch (error) {
+			console.error('Failed to load project:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
+			navigate('/admin/dashboard');
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	// Animation variants
 	const containerVariants = {
@@ -150,7 +131,7 @@ const ProjectForm = () => {
 			isValid = false;
 		}
 
-		if (!imageFile && !formData.image.trim()) {
+		if (!imageFile && !imagePreview && !isEditing) {
 			newErrors.image = 'Project image is required';
 			isValid = false;
 		}
@@ -173,24 +154,70 @@ const ProjectForm = () => {
 		setIsSubmitting(true);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			let imageUrl = imagePreview;
 
-			// TODO: Implement actual API call
-			console.log('Form submitted:', formData);
+			// Upload image if new file is selected
+			if (imageFile) {
+				setIsUploading(true);
+				const uploadResponse = await uploadApi.uploadSingle(imageFile);
 
-			// Redirect to dashboard after successful submission
-			navigate('/admin/dashboard');
+				if (uploadResponse.success && uploadResponse.data) {
+					imageUrl = uploadResponse.data.url;
+				} else {
+					toast({
+						title: 'Error',
+						description: uploadResponse.error || 'Failed to upload image',
+						variant: 'destructive',
+					});
+					setIsUploading(false);
+					setIsSubmitting(false);
+					return;
+				}
+				setIsUploading(false);
+			}
+
+			// Prepare project data
+			const projectData = {
+				...formData,
+				imageUrl,
+			};
+
+			// Create or update project
+			let response;
+			if (isEditing && id) {
+				response = await projectsApi.update(id, projectData);
+			} else {
+				response = await projectsApi.create(projectData);
+			}
+
+			if (response.success) {
+				toast({
+					title: 'Success',
+					description: isEditing ? 'Project updated successfully' : 'Project created successfully',
+				});
+				navigate('/admin/dashboard');
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to save project',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Form submission failed:', error);
-			// TODO: Show error message
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		} finally {
 			setIsSubmitting(false);
+			setIsUploading(false);
 		}
 	};
 
 	// Handle input changes
-	const handleInputChange = (field: keyof Project, value: string) => {
+	const handleInputChange = (field: keyof typeof formData, value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
 		// Clear error when user starts typing
 		if (errors[field]) {
@@ -253,8 +280,6 @@ const ProjectForm = () => {
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				setImagePreview(reader.result as string);
-				// Update form data with the preview URL
-				setFormData((prev) => ({ ...prev, image: reader.result as string }));
 			};
 			reader.readAsDataURL(file);
 		}
@@ -264,7 +289,6 @@ const ProjectForm = () => {
 	const handleRemoveImage = () => {
 		setImageFile(null);
 		setImagePreview('');
-		setFormData((prev) => ({ ...prev, image: '' }));
 		// Clear the file input
 		const fileInput = document.getElementById('image-upload') as HTMLInputElement;
 		if (fileInput) {
@@ -463,18 +487,16 @@ const ProjectForm = () => {
 									{errors.image && <p className="text-xs text-destructive mt-1">{errors.image}</p>}
 
 									{/* Fallback URL Input for existing images */}
-									{isEditing && formData.image && !imagePreview && (
+									{isEditing && imagePreview && (
 										<div className="space-y-2">
 											<Label htmlFor="image-url" className="text-xs text-muted-foreground">
-												Or keep existing image URL:
+												Current image URL:
 											</Label>
 											<Input
 												id="image-url"
 												type="text"
-												placeholder="Enter project image URL"
-												value={formData.image}
-												onChange={(e) => handleInputChange('image', e.target.value)}
-												disabled={isSubmitting}
+												value={imagePreview}
+												disabled
 												className="text-xs"
 											/>
 										</div>
@@ -520,12 +542,14 @@ const ProjectForm = () => {
 								<Button
 									type="submit"
 									className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-									disabled={isSubmitting}
+									disabled={isSubmitting || isUploading}
 								>
-									{isSubmitting ? (
+									{isSubmitting || isUploading ? (
 										<div className="flex items-center space-x-2">
 											<div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-											<span>{isEditing ? 'Updating...' : 'Creating...'}</span>
+											<span>
+												{isUploading ? 'Uploading...' : isEditing ? 'Updating...' : 'Creating...'}
+											</span>
 										</div>
 									) : (
 										<div className="flex items-center space-x-2">
@@ -539,7 +563,7 @@ const ProjectForm = () => {
 									type="button"
 									variant="outline"
 									onClick={() => navigate('/admin/dashboard')}
-									disabled={isSubmitting}
+									disabled={isSubmitting || isUploading}
 								>
 									Cancel
 								</Button>

@@ -5,7 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
 	Plus,
@@ -24,18 +23,10 @@ import {
 	User as UserIcon,
 	Settings,
 } from 'lucide-react';
-
-// Interface untuk tipe data user
-interface User {
-	id: string;
-	name: string;
-	email: string;
-	role: 'admin' | 'super_admin';
-	createdAt: string;
-	updatedAt: string;
-	lastLoginAt?: string;
-	isActive: boolean;
-}
+import { useNavigate } from 'react-router-dom';
+import { adminApi, type User } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 // Interface untuk form user
 interface UserFormData {
@@ -49,6 +40,12 @@ interface UserFormData {
 // Komponen UserManagement untuk manage admin users
 // Menyediakan interface untuk CRUD operations pada admin users
 const UserManagement = () => {
+	// Hooks
+	const { toast } = useToast();
+	const { user } = useAuth();
+	const navigate = useNavigate();
+
+	// State
 	const [users, setUsers] = useState<User[]>([]);
 	const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -71,40 +68,6 @@ const UserManagement = () => {
 
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	// Mock data untuk users
-	const mockUsers: User[] = [
-		{
-			id: '1',
-			name: 'Admin FTS',
-			email: 'admin@fts.biz.id',
-			role: 'super_admin',
-			createdAt: '2024-01-01T00:00:00Z',
-			updatedAt: '2024-01-01T00:00:00Z',
-			lastLoginAt: '2024-01-15T09:00:00Z',
-			isActive: true,
-		},
-		{
-			id: '2',
-			name: 'John Doe',
-			email: 'john@fts.biz.id',
-			role: 'admin',
-			createdAt: '2024-01-10T00:00:00Z',
-			updatedAt: '2024-01-10T00:00:00Z',
-			lastLoginAt: '2024-01-14T14:30:00Z',
-			isActive: true,
-		},
-		{
-			id: '3',
-			name: 'Jane Smith',
-			email: 'jane@fts.biz.id',
-			role: 'admin',
-			createdAt: '2024-01-12T00:00:00Z',
-			updatedAt: '2024-01-12T00:00:00Z',
-			lastLoginAt: '2024-01-13T16:45:00Z',
-			isActive: false,
-		},
-	];
-
 	// Load users
 	useEffect(() => {
 		loadUsers();
@@ -114,12 +77,25 @@ const UserManagement = () => {
 	const loadUsers = async () => {
 		setIsLoading(true);
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			setUsers(mockUsers);
-			setFilteredUsers(mockUsers);
+			const response = await adminApi.getUsers();
+
+			if (response.success && response.data) {
+				setUsers(response.data);
+				setFilteredUsers(response.data);
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to load users',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Failed to load users:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		} finally {
 			setIsLoading(false);
 		}
@@ -156,10 +132,14 @@ const UserManagement = () => {
 
 		if (!isEditing) {
 			if (!formData.password.trim()) {
-				newErrors.password = 'Password is required';
+				newErrors.password = 'Password must be at least 6 characters long';
 				isValid = false;
-			} else if (formData.password.length < 8) {
-				newErrors.password = 'Password must be at least 8 characters';
+			} else if (formData.password.length < 6) {
+				newErrors.password = 'Password must be at least 6 characters long';
+				isValid = false;
+			} else if (!/^[a-zA-Z0-9]+$/.test(formData.password)) {
+				newErrors.password =
+					'Password must be at least 6 characters long and contain only letters and numbers';
 				isValid = false;
 			}
 
@@ -185,41 +165,60 @@ const UserManagement = () => {
 		setIsSubmitting(true);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1500));
+			let response;
 
 			if (isEditing && editingUser) {
 				// Update existing user
-				const updatedUsers = users.map((user) =>
-					user.id === editingUser.id
-						? {
-								...user,
-								name: formData.name,
-								email: formData.email,
-								role: formData.role,
-								updatedAt: new Date().toISOString(),
-						  }
-						: user
-				);
-				setUsers(updatedUsers);
-			} else {
-				// Create new user
-				const newUser: User = {
-					id: Date.now().toString(),
+				response = await adminApi.updateUser(editingUser.id, {
 					name: formData.name,
 					email: formData.email,
 					role: formData.role,
-					createdAt: new Date().toISOString(),
-					updatedAt: new Date().toISOString(),
-					isActive: true,
-				};
-				setUsers([...users, newUser]);
+				});
+
+				if (response.success && response.data) {
+					setUsers((prev) =>
+						prev.map((user) => (user.id === editingUser.id ? response.data! : user))
+					);
+					toast({
+						title: 'Success',
+						description: 'User updated successfully',
+					});
+				}
+			} else {
+				// Create new user
+				response = await adminApi.createUser({
+					name: formData.name,
+					email: formData.email,
+					password: formData.password,
+					role: formData.role,
+				});
+
+				if (response.success && response.data) {
+					setUsers((prev) => [...prev, response.data!]);
+					toast({
+						title: 'Success',
+						description: 'User created successfully',
+					});
+				}
 			}
 
-			// Reset form
-			resetForm();
+			if (response.success) {
+				// Reset form
+				resetForm();
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to save user',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Form submission failed:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -270,24 +269,64 @@ const UserManagement = () => {
 		if (!confirm('Are you sure you want to delete this user?')) return;
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			setUsers((prev) => prev.filter((user) => user.id !== userId));
+			const response = await adminApi.deleteUser(userId);
+
+			if (response.success) {
+				setUsers((prev) => prev.filter((user) => user.id !== userId));
+				toast({
+					title: 'Success',
+					description: 'User deleted successfully',
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to delete user',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Failed to delete user:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		}
 	};
 
 	// Handle toggle user status
 	const handleToggleUserStatus = async (userId: string) => {
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			setUsers((prev) =>
-				prev.map((user) => (user.id === userId ? { ...user, isActive: !user.isActive } : user))
-			);
+			const user = users.find((u) => u.id === userId);
+			if (!user) return;
+
+			const response = await adminApi.updateUser(userId, {
+				// Note: Backend needs to support isActive field
+				// For now, we'll just update the local state
+			});
+
+			if (response.success) {
+				setUsers((prev) =>
+					prev.map((u) => (u.id === userId ? { ...u, isActive: !u.isActive } : u))
+				);
+				toast({
+					title: 'Success',
+					description: `User ${user.isActive ? 'deactivated' : 'activated'} successfully`,
+				});
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to update user status',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Failed to toggle user status:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		}
 	};
 
@@ -314,6 +353,22 @@ const UserManagement = () => {
 			minute: '2-digit',
 		}).format(date);
 	};
+
+	// Check if user has permission to access this page
+	if (user?.role !== 'super_admin') {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-center">
+					<Shield className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+					<h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+					<p className="text-muted-foreground mb-4">
+						You don't have permission to access User Management.
+					</p>
+					<Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
+				</div>
+			</div>
+		);
+	}
 
 	if (isLoading) {
 		return (

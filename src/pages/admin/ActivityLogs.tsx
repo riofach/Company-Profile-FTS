@@ -15,23 +15,12 @@ import {
 	Calendar,
 	Settings,
 	Eye,
+	Shield,
 } from 'lucide-react';
-
-// Interface untuk tipe data activity log
-interface ActivityLog {
-	id: string;
-	userId: string;
-	userName: string;
-	userEmail: string;
-	action: 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT';
-	resourceType: 'project' | 'user' | 'system';
-	resourceId?: string;
-	resourceName?: string;
-	details?: Record<string, string | number | boolean | object>;
-	ipAddress?: string;
-	userAgent?: string;
-	createdAt: string;
-}
+import { useNavigate } from 'react-router-dom';
+import { adminApi, type ActivityLog } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 // Interface untuk filter options
 interface FilterOptions {
@@ -45,6 +34,12 @@ interface FilterOptions {
 // Komponen ActivityLogs untuk tracking dan monitoring aktivitas admin
 // Menyediakan interface untuk melihat history semua aktivitas sistem
 const ActivityLogs = () => {
+	// Hooks
+	const { toast } = useToast();
+	const { user } = useAuth();
+	const navigate = useNavigate();
+
+	// State
 	const [logs, setLogs] = useState<ActivityLog[]>([]);
 	const [filteredLogs, setFilteredLogs] = useState<ActivityLog[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -57,76 +52,6 @@ const ActivityLogs = () => {
 	});
 	const [showFilters, setShowFilters] = useState(false);
 
-	// Mock data untuk activity logs
-	const mockLogs: ActivityLog[] = [
-		{
-			id: '1',
-			userId: '1',
-			userName: 'Admin FTS',
-			userEmail: 'admin@fts.biz.id',
-			action: 'CREATE',
-			resourceType: 'project',
-			resourceId: 'proj-001',
-			resourceName: 'Tire Reservation',
-			details: { title: 'Tire Reservation', tags: ['Laravel', 'PostgreSQL'] },
-			ipAddress: '192.168.1.100',
-			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-			createdAt: '2024-01-15T10:30:00Z',
-		},
-		{
-			id: '2',
-			userId: '1',
-			userName: 'Admin FTS',
-			userEmail: 'admin@fts.biz.id',
-			action: 'UPDATE',
-			resourceType: 'project',
-			resourceId: 'proj-002',
-			resourceName: 'Building Maintenance',
-			details: { changedFields: ['description', 'tags'] },
-			ipAddress: '192.168.1.100',
-			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-			createdAt: '2024-01-15T11:45:00Z',
-		},
-		{
-			id: '3',
-			userId: '1',
-			userName: 'Admin FTS',
-			userEmail: 'admin@fts.biz.id',
-			action: 'DELETE',
-			resourceType: 'project',
-			resourceId: 'proj-003',
-			resourceName: 'Old Project',
-			details: { reason: 'Deprecated project' },
-			ipAddress: '192.168.1.100',
-			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-			createdAt: '2024-01-15T14:20:00Z',
-		},
-		{
-			id: '4',
-			userId: '1',
-			userName: 'Admin FTS',
-			userEmail: 'admin@fts.biz.id',
-			action: 'LOGIN',
-			resourceType: 'system',
-			details: { loginMethod: 'email_password' },
-			ipAddress: '192.168.1.100',
-			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-			createdAt: '2024-01-15T09:00:00Z',
-		},
-		{
-			id: '5',
-			userId: '1',
-			userName: 'Admin FTS',
-			userEmail: 'admin@fts.biz.id',
-			action: 'LOGOUT',
-			resourceType: 'system',
-			details: { sessionDuration: '2h 30m' },
-			ipAddress: '192.168.1.100',
-			userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-			createdAt: '2024-01-15T17:30:00Z',
-		},
-	];
-
 	// Load activity logs
 	useEffect(() => {
 		loadActivityLogs();
@@ -136,12 +61,25 @@ const ActivityLogs = () => {
 	const loadActivityLogs = async () => {
 		setIsLoading(true);
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			setLogs(mockLogs);
-			setFilteredLogs(mockLogs);
+			const response = await adminApi.getActivityLogs();
+
+			if (response.success && response.data) {
+				setLogs(response.data);
+				setFilteredLogs(response.data);
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to load activity logs',
+					variant: 'destructive',
+				});
+			}
 		} catch (error) {
 			console.error('Failed to load activity logs:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred',
+				variant: 'destructive',
+			});
 		} finally {
 			setIsLoading(false);
 		}
@@ -248,9 +186,72 @@ const ActivityLogs = () => {
 
 	// Export logs to CSV
 	const exportToCSV = () => {
-		// TODO: Implement CSV export functionality
-		console.log('Export to CSV functionality');
+		try {
+			// Create CSV content
+			const headers = [
+				'Timestamp',
+				'User',
+				'Email',
+				'Action',
+				'Resource Type',
+				'Resource Name',
+				'IP Address',
+			];
+			const csvContent = [
+				headers.join(','),
+				...filteredLogs.map((log) =>
+					[
+						`"${log.createdAt}"`,
+						`"${log.userName}"`,
+						`"${log.userEmail}"`,
+						`"${log.action}"`,
+						`"${log.resourceType}"`,
+						`"${log.resourceName || ''}"`,
+						`"${log.ipAddress || ''}"`,
+					].join(',')
+				),
+			].join('\n');
+
+			// Create download link
+			const blob = new Blob([csvContent], { type: 'text/csv' });
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `activity-logs-${new Date().toISOString().split('T')[0]}.csv`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+
+			toast({
+				title: 'Success',
+				description: 'Activity logs exported successfully',
+			});
+		} catch (error) {
+			console.error('Export failed:', error);
+			toast({
+				title: 'Error',
+				description: 'Failed to export activity logs',
+				variant: 'destructive',
+			});
+		}
 	};
+
+	// Check if user has permission to access this page
+	if (user?.role !== 'super_admin') {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-center">
+					<Shield className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+					<h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+					<p className="text-muted-foreground mb-4">
+						You don't have permission to access Activity Logs.
+					</p>
+					<Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
+				</div>
+			</div>
+		);
+	}
 
 	if (isLoading) {
 		return (

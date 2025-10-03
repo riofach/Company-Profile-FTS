@@ -60,7 +60,9 @@ coverage
 .cursor
 *.sublime-project
 *.sublime-workspace
+.kilocode
 
 # Temporary files
 tmp/
 temp/
+
