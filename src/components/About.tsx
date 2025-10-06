@@ -103,24 +103,28 @@ const About = () => {
 							</div>
 						</motion.div>
 
-						{/* Right Content - Stats */}
-						<motion.div variants={itemVariants} className="grid grid-cols-2 gap-6">
-							{[
-								{ number: '500+', label: 'Projects Delivered' },
-								{ number: '50+', label: 'Team Members' },
-								{ number: '25+', label: 'Countries Served' },
-								{ number: '24/7', label: 'Support Available' },
-							].map((stat, index) => (
-								<motion.div
-									key={index}
-									className="card-gradient p-6 rounded-xl text-center"
-									whileHover={{ scale: 1.05 }}
-									transition={{ duration: 0.2 }}
-								>
-									<div className="text-3xl font-bold gradient-text mb-2">{stat.number}</div>
-									<div className="text-sm text-muted-foreground">{stat.label}</div>
-								</motion.div>
-							))}
+						{/* Right Content - Logo */}
+						<motion.div
+							variants={itemVariants}
+							className="flex items-center justify-center"
+							whileHover={{ scale: 1.02 }}
+							transition={{ duration: 0.3 }}
+						>
+							<div className="relative group">
+								{/* Logo Container dengan theme-aware background */}
+								<div className="card-gradient p-8 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+									{/* Logo Image */}
+									<img
+										src="/Logo FTS.jpg"
+										alt="Fujiyama Technology Solutions Logo"
+										className="w-full h-auto max-w-sm mx-auto rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
+										loading="eager"
+									/>
+								</div>
+
+								{/* Subtle glow effect untuk dark mode */}
+								<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/20 to-primary/10 dark:from-primary/10 dark:to-primary/5 -z-10 blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+							</div>
 						</motion.div>
 					</div>
 
