@@ -6,7 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, FolderOpen, BarChart3, Users, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME } from '@/lib/brand';
-import { projectsApi, adminApi, type Project, type DashboardStats } from '@/services/api';
+import {
+	projectsApi,
+	adminApi,
+	type Project,
+	type DashboardStats,
+	type User,
+} from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
 // Komponen Admin Dashboard untuk management projects
@@ -37,29 +43,17 @@ const AdminDashboard = () => {
 	const loadDashboardData = async () => {
 		setIsLoading(true);
 		try {
-			// Load projects first
-			const projectsResponse = await projectsApi.getAll();
+			// Load projects dan users secara paralel untuk performance yang lebih baik
+			const [projectsResponse, usersResponse] = await Promise.all([
+				projectsApi.getAll(),
+				adminApi.getUsers(),
+			]);
 
+			// Handle projects data
+			let projectsArray: Project[] = [];
 			if (projectsResponse.success && projectsResponse.data) {
-				// Ensure projects data is an array
-				const projectsArray = Array.isArray(projectsResponse.data) ? projectsResponse.data : [];
+				projectsArray = Array.isArray(projectsResponse.data) ? projectsResponse.data : [];
 				setProjects(projectsArray);
-
-				// Calculate stats from projects data since admin/stats endpoint doesn't exist
-				const calculatedStats: DashboardStats = {
-					totalProjects: projectsArray.length,
-					totalUsers: 0, // Will be loaded separately if needed
-					totalTags: [...new Set(projectsArray.flatMap((p) => p.tags || []))].length,
-					recentProjects: projectsArray.filter((p) => {
-						const projectDate = new Date(p.createdAt);
-						const thirtyDaysAgo = new Date();
-						thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-						return projectDate > thirtyDaysAgo;
-					}).length,
-					recentActivity: 0, // Will be loaded separately if needed
-				};
-
-				setStats(calculatedStats);
 			} else {
 				toast({
 					title: 'Error',
@@ -67,11 +61,36 @@ const AdminDashboard = () => {
 					variant: 'destructive',
 				});
 			}
+
+			// Handle users data
+			let usersArray: User[] = [];
+			if (usersResponse.success && usersResponse.data) {
+				usersArray = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+			} else {
+				// Log error tapi tidak show toast karena tidak blocking user experience
+				console.warn('Failed to load users data:', usersResponse.error);
+			}
+
+			// Calculate stats dari projects dan users data
+			const calculatedStats: DashboardStats = {
+				totalProjects: projectsArray.length,
+				totalUsers: usersArray.length, // Fix: Gunakan data dari API users
+				totalTags: [...new Set(projectsArray.flatMap((p) => p.tags || []))].length,
+				recentProjects: projectsArray.filter((p) => {
+					const projectDate = new Date(p.createdAt);
+					const thirtyDaysAgo = new Date();
+					thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+					return projectDate > thirtyDaysAgo;
+				}).length,
+				recentActivity: 0, // Akan diimplementasikan nanti dengan activity logs
+			};
+
+			setStats(calculatedStats);
 		} catch (error) {
 			console.error('Failed to load dashboard data:', error);
 			toast({
 				title: 'Error',
-				description: 'An unexpected error occurred',
+				description: 'An unexpected error occurred while loading dashboard',
 				variant: 'destructive',
 			});
 		} finally {
