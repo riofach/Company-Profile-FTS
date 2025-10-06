@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -5,51 +6,56 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, Github, Grid3X3 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
+import { projectsApi, type Project } from '@/services/api';
+import { useToast } from '@/hooks/use-toast';
 
+// Komponen Projects untuk menampilkan portfolio projects
+// Mengambil data dari backend API dan menampilkan dalam grid layout
 const Projects = () => {
-	// All projects data
-	const allProjects = [
-		{
-			title: 'Tire Reservation',
-			description:
-				'Advanced tire reservation and inventory management system with real-time availability tracking and automated booking processes. Features comprehensive tire catalog, customer management, and seamless reservation workflow.',
-			image: '/images/projects/tire.png',
-			tags: ['Laravel', 'PostgreSQL', 'Reservation'],
-			liveUrl: 'https://tire.fts.biz.id',
-			githubUrl: '#',
-		},
-		{
-			title: 'Building Maintenance',
-			description:
-				'Comprehensive building maintenance management system with work order tracking, preventive maintenance scheduling, and facility management. Includes asset tracking, maintenance history, and automated reporting for building operations.',
-			image: '/images/projects/bill-maintenance.png',
-			tags: ['Laravel', 'MySQL', 'Building', 'Maintenance'],
-			liveUrl: 'https://bill-maintenance.fts.biz.id',
-			githubUrl: '#',
-		},
-		{
-			title: 'Car Repair Shop',
-			description:
-				'Complete car repair shop management system with appointment scheduling, service tracking, inventory management, and customer relationship management. Features repair history, billing integration, and workshop workflow optimization.',
-			image: '/images/projects/car-repair.png',
-			tags: ['Laravel', 'MySQL', 'Car Repair', 'Shop'],
-			liveUrl: 'https://car-repair.fts.biz.id',
-			githubUrl: '#',
-		},
-		{
-			title: 'Ebilahall',
-			description:
-				'Comprehensive event hall management system with booking management, event scheduling, capacity planning, and facility coordination. Features event calendar, customer management, and automated booking confirmations for hall operations.',
-			image: '/images/projects/ebilahall.png',
-			tags: ['Laravel', 'MySQL', 'Hall', 'Event'],
-			liveUrl: 'https://ebilahall.fts.biz.id',
-			githubUrl: '#',
-		},
-	];
+	// Hooks
+	const { toast } = useToast();
+
+	// State management
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+
+	// Load projects dari backend API
+	useEffect(() => {
+		loadProjects();
+	}, []);
+
+	// Function untuk load projects dari API
+	const loadProjects = async () => {
+		setIsLoading(true);
+		try {
+			const response = await projectsApi.getAll();
+
+			if (response.success && response.data) {
+				// Ensure data is array
+				const projectsArray = Array.isArray(response.data) ? response.data : [];
+				setProjects(projectsArray);
+			} else {
+				toast({
+					title: 'Error',
+					description: response.error || 'Failed to load projects',
+					variant: 'destructive',
+				});
+			}
+		} catch (error) {
+			console.error('Failed to load projects:', error);
+			toast({
+				title: 'Error',
+				description: 'An unexpected error occurred while loading projects',
+				variant: 'destructive',
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	// Show only latest 3 projects
-	const latestProjects = allProjects.slice(0, 3);
-	const remainingProjects = allProjects.slice(3);
+	const latestProjects = projects.slice(0, 3);
+	const remainingProjects = projects.slice(3);
 
 	const projectCategories = [
 		{
@@ -59,6 +65,18 @@ const Projects = () => {
 			projects: latestProjects,
 		},
 	];
+
+	// Loading state
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-background flex items-center justify-center">
+				<div className="text-center">
+					<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+					<p className="text-muted-foreground">Loading projects...</p>
+				</div>
+			</div>
+		);
+	}
 
 	const containerVariants = {
 		hidden: { opacity: 0 },
@@ -112,7 +130,7 @@ const Projects = () => {
 							>
 								<Link to="/projects/all" className="flex items-center space-x-2">
 									<Grid3X3 className="w-4 h-4" />
-									<span>All Projects ({allProjects.length})</span>
+									<span>All Projects ({projects.length})</span>
 								</Link>
 							</Button>
 						</div>
@@ -143,7 +161,7 @@ const Projects = () => {
 							<span>Latest {latestProjects.length} Projects</span>
 							<span>•</span>
 							<Link to="/projects/all" className="text-primary hover:underline">
-								View All {allProjects.length} Projects
+								View All {projects.length} Projects
 							</Link>
 						</div>
 					</motion.div>
@@ -177,7 +195,7 @@ const Projects = () => {
 									<Card className="overflow-hidden group hover:shadow-lg transition-all duration-300">
 										<div className="relative overflow-hidden">
 											<img
-												src={project.image}
+												src={project.imageUrl || '/placeholder.svg'}
 												alt={project.title}
 												className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
 											/>
