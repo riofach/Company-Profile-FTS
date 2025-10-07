@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, FolderOpen, BarChart3, Users, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME } from '@/lib/brand';
+import DeleteConfirmationModal from '@/components/ui/DeleteConfirmationModal';
 import {
 	projectsApi,
 	adminApi,
@@ -33,6 +34,11 @@ const AdminDashboard = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+	// Delete confirmation modal state
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+	const [isDeletingProject, setIsDeletingProject] = useState(false);
 
 	// Load data on mount
 	useEffect(() => {
@@ -129,19 +135,35 @@ const AdminDashboard = () => {
 		  )
 		: [];
 
-	// Handle delete project
-	const handleDeleteProject = async (projectId: string) => {
-		setIsDeleting(projectId);
+	// Handle delete project confirmation
+	const handleDeleteProjectClick = (project: Project) => {
+		setProjectToDelete(project);
+		setDeleteModalOpen(true);
+	};
+
+	// Handle delete project confirmation modal close
+	const handleCloseDeleteModal = () => {
+		setDeleteModalOpen(false);
+		setProjectToDelete(null);
+	};
+
+	// Handle confirm delete project
+	const handleConfirmDeleteProject = async () => {
+		if (!projectToDelete) return;
+
+		setIsDeletingProject(true);
+		setIsDeleting(projectToDelete.id);
 
 		try {
-			const response = await projectsApi.delete(projectId);
+			const response = await projectsApi.delete(projectToDelete.id);
 
 			if (response.success) {
-				setProjects((prev) => prev.filter((project) => project.id !== projectId));
+				setProjects((prev) => prev.filter((project) => project.id !== projectToDelete.id));
 				toast({
 					title: 'Success',
 					description: 'Project deleted successfully',
 				});
+				handleCloseDeleteModal();
 			} else {
 				toast({
 					title: 'Error',
@@ -157,6 +179,7 @@ const AdminDashboard = () => {
 				variant: 'destructive',
 			});
 		} finally {
+			setIsDeletingProject(false);
 			setIsDeleting(null);
 		}
 	};
@@ -338,7 +361,7 @@ const AdminDashboard = () => {
 														<Button
 															variant="destructive"
 															size="sm"
-															onClick={() => handleDeleteProject(project.id)}
+															onClick={() => handleDeleteProjectClick(project)}
 															disabled={isDeleting === project.id}
 															className="flex items-center space-x-2"
 														>
@@ -365,6 +388,17 @@ const AdminDashboard = () => {
 					</div>
 				</Card>
 			</motion.div>
+
+			{/* Delete Confirmation Modal */}
+			<DeleteConfirmationModal
+				isOpen={deleteModalOpen}
+				onClose={handleCloseDeleteModal}
+				onConfirm={handleConfirmDeleteProject}
+				title="Delete Project"
+				description="Are you sure you want to delete this project? This action cannot be undone and will remove all project data including images and associated information."
+				itemName={projectToDelete ? projectToDelete.title : ''}
+				isLoading={isDeletingProject}
+			/>
 		</div>
 	);
 };
