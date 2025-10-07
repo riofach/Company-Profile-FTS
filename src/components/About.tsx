@@ -115,7 +115,7 @@ const About = () => {
 								<div className="card-gradient p-8 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300">
 									{/* Logo Image */}
 									<img
-										src="/Logo FTS.jpg"
+										src="/Logo FTS.webp"
 										alt="Fujiyama Technology Solutions Logo"
 										className="w-full h-auto max-w-sm mx-auto rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
 										loading="eager"

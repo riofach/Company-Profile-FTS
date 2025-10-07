@@ -369,7 +369,7 @@ const Contact = () => {
 				<motion.div variants={itemVariants} className="mt-16 grid md:grid-cols-2 gap-6">
 					<div className="card-gradient rounded-xl overflow-hidden">
 						<img
-							src="/images/neosoho.png"
+							src="/images/neosoho.webp"
 							alt="Fujiyama Office Building"
 							className="w-full h-64 md:h-80 object-cover"
 							loading="lazy"
