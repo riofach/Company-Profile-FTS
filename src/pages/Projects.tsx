@@ -123,16 +123,6 @@ const Projects = () => {
 									<span>Back to Home</span>
 								</Link>
 							</Button>
-							<Button
-								variant="default"
-								asChild
-								className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
-							>
-								<Link to="/projects/all" className="flex items-center space-x-2">
-									<Grid3X3 className="w-4 h-4" />
-									<span>All Projects ({projects.length})</span>
-								</Link>
-							</Button>
 						</div>
 					</div>
 				</div>
@@ -252,6 +242,43 @@ const Projects = () => {
 						</div>
 					</motion.section>
 				))}
+
+				{/* All Projects Button Section */}
+				<motion.section variants={itemVariants} className="text-center py-12">
+					<div className="max-w-2xl mx-auto">
+						<div className="mb-6">
+							<h3 className="text-2xl font-bold mb-3">
+								Explore More <span className="gradient-text">Projects</span>
+							</h3>
+							<p className="text-muted-foreground">
+								Discover our complete portfolio of innovative digital solutions and see how we've
+								helped businesses transform their ideas into reality.
+							</p>
+						</div>
+						<motion.div
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							transition={{ duration: 0.2 }}
+							className="inline-block"
+						>
+							<Button
+								size="lg"
+								asChild
+								className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300 group"
+							>
+								<Link to="/projects/all" className="flex items-center space-x-3 px-8 py-6">
+									<Grid3X3 className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+									<span className="text-lg font-semibold">
+										View All Projects ({projects.length})
+									</span>
+								</Link>
+							</Button>
+						</motion.div>
+						<div className="mt-4 text-sm text-muted-foreground">
+							<span>Total Projects: {projects.length}</span>
+						</div>
+					</div>
+				</motion.section>
 
 				{/* CTA Section */}
 				<motion.section variants={itemVariants} className="text-center py-16">

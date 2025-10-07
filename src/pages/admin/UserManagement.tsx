@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import DeleteConfirmationModal from '@/components/ui/DeleteConfirmationModal';
 import {
 	Plus,
 	Edit,
@@ -56,6 +57,11 @@ const UserManagement = () => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editingUser, setEditingUser] = useState<User | null>(null);
 	const [showForm, setShowForm] = useState(false);
+
+	// Delete confirmation modal state
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+	const [userToDelete, setUserToDelete] = useState<User | null>(null);
+	const [isDeleting, setIsDeleting] = useState(false);
 
 	// Form state
 	const [formData, setFormData] = useState<UserFormData>({
@@ -264,19 +270,34 @@ const UserManagement = () => {
 		setShowForm(true);
 	};
 
-	// Handle delete user
-	const handleDeleteUser = async (userId: string) => {
-		if (!confirm('Are you sure you want to delete this user?')) return;
+	// Handle delete user confirmation
+	const handleDeleteUserClick = (user: User) => {
+		setUserToDelete(user);
+		setDeleteModalOpen(true);
+	};
 
+	// Handle delete user confirmation modal close
+	const handleCloseDeleteModal = () => {
+		setDeleteModalOpen(false);
+		setUserToDelete(null);
+	};
+
+	// Handle confirm delete user
+	const handleConfirmDeleteUser = async () => {
+		if (!userToDelete) return;
+
+		setIsDeleting(true);
 		try {
-			const response = await adminApi.deleteUser(userId);
+			const response = await adminApi.deleteUser(userToDelete.id);
 
 			if (response.success) {
-				setUsers((prev) => prev.filter((user) => user.id !== userId));
+				setUsers((prev) => prev.filter((user) => user.id !== userToDelete.id));
+				setFilteredUsers((prev) => prev.filter((user) => user.id !== userToDelete.id));
 				toast({
 					title: 'Success',
 					description: 'User deleted successfully',
 				});
+				handleCloseDeleteModal();
 			} else {
 				toast({
 					title: 'Error',
@@ -291,6 +312,8 @@ const UserManagement = () => {
 				description: 'An unexpected error occurred',
 				variant: 'destructive',
 			});
+		} finally {
+			setIsDeleting(false);
 		}
 	};
 
@@ -684,7 +707,7 @@ const UserManagement = () => {
 													<Button
 														variant="destructive"
 														size="sm"
-														onClick={() => handleDeleteUser(user.id)}
+														onClick={() => handleDeleteUserClick(user)}
 														className="flex items-center space-x-2"
 													>
 														<Trash2 className="w-4 h-4" />
@@ -700,6 +723,17 @@ const UserManagement = () => {
 					)}
 				</Card>
 			</motion.div>
+
+			{/* Delete Confirmation Modal */}
+			<DeleteConfirmationModal
+				isOpen={deleteModalOpen}
+				onClose={handleCloseDeleteModal}
+				onConfirm={handleConfirmDeleteUser}
+				title="Delete User"
+				description="Are you sure you want to delete this user? This action cannot be undone and will remove all access permissions."
+				itemName={userToDelete ? `${userToDelete.name} (${userToDelete.email})` : ''}
+				isLoading={isDeleting}
+			/>
 		</div>
 	);
 };
