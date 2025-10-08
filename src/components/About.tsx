@@ -68,9 +68,10 @@ const About = () => {
 						<p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
 							<strong>Fujiyama Technology Solutions (FTS)</strong> is a{' '}
 							<strong>Japanese-rooted IT company</strong> committed to building Indonesia's digital
-							future. With over 95% of our team proudly Indonesian, we combine global technology
+							future.
+							{/* future. With over 95% of our team proudly Indonesian, we combine global technology
 							trends with local market insight to create advanced digital solutions tailored for
-							businesses, government, and society across the archipelago.
+							businesses, government, and society across the archipelago. */}
 						</p>
 					</motion.div>
 
@@ -129,7 +130,7 @@ const About = () => {
 					</div>
 
 					{/* Features Grid */}
-					<motion.div variants={itemVariants} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+					{/* <motion.div variants={itemVariants} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 						{features.map((feature, index) => (
 							<motion.div
 								key={index}
@@ -144,7 +145,7 @@ const About = () => {
 								<p className="text-sm text-muted-foreground">{feature.description}</p>
 							</motion.div>
 						))}
-					</motion.div>
+					</motion.div> */}
 				</motion.div>
 			</div>
 		</section>

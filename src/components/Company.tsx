@@ -1,7 +1,23 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { MapPin, Mail, Linkedin, Github, Twitter } from 'lucide-react';
+import {
+	MapPin,
+	Mail,
+	Linkedin,
+	Github,
+	Twitter,
+	Target,
+	Award,
+	TrendingUp,
+	Lightbulb,
+	Sparkles,
+	Phone,
+	Building2,
+	Clock,
+	ArrowRight,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Company = () => {
 	const ref = useRef(null);
@@ -70,26 +86,43 @@ const Company = () => {
 		},
 	];
 
+	// Company values dengan icon dan warna yang lebih menarik
 	const values = [
 		{
+			icon: Lightbulb,
 			title: 'Innovation',
 			description:
 				'We embrace cutting-edge technologies and creative solutions to solve complex challenges.',
+			color: 'from-amber-500/20 to-orange-500/20',
+			iconColor: 'text-amber-500',
+			bgGlow: 'bg-amber-500/10',
 		},
 		{
+			icon: Award,
 			title: 'Quality',
 			description:
 				'Every project is delivered with meticulous attention to detail and the highest standards.',
+			color: 'from-blue-500/20 to-cyan-500/20',
+			iconColor: 'text-blue-500',
+			bgGlow: 'bg-blue-500/10',
 		},
 		{
+			icon: Target,
 			title: 'Transparency',
 			description:
 				'Open communication and honest partnerships are the foundation of our relationships.',
+			color: 'from-green-500/20 to-emerald-500/20',
+			iconColor: 'text-green-500',
+			bgGlow: 'bg-green-500/10',
 		},
 		{
+			icon: TrendingUp,
 			title: 'Growth',
 			description:
 				"We're committed to continuous learning and helping our clients achieve sustainable growth.",
+			color: 'from-purple-500/20 to-pink-500/20',
+			iconColor: 'text-purple-500',
+			bgGlow: 'bg-purple-500/10',
 		},
 	];
 
@@ -243,60 +276,289 @@ const Company = () => {
 						</div>
 					</motion.div>
 
-					{/* Company Values */}
-					<motion.div variants={itemVariants}>
-						<h3 className="text-3xl font-bold text-center my-8">
-							Our <span className="gradient-text">Values</span>
-						</h3>
+					{/* Company Values - Enhanced Visual Design */}
+					<motion.div variants={itemVariants} className="mt-20 relative">
+						{/* Decorative background elements */}
+						<div className="absolute inset-0 -z-10">
+							<div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+							<div className="absolute top-1/2 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+						</div>
 
+						{/* Section Header dengan decorative element */}
+						<div className="text-center mb-12 relative">
+							<motion.div
+								className="inline-flex items-center gap-2 mb-4"
+								initial={{ opacity: 0, y: 20 }}
+								animate={isInView ? { opacity: 1, y: 0 } : {}}
+								transition={{ duration: 0.6 }}
+							>
+								<Sparkles className="w-5 h-5 text-primary" />
+								<span className="text-primary font-semibold text-sm uppercase tracking-wider">
+									What Drives Us
+								</span>
+								<Sparkles className="w-5 h-5 text-primary" />
+							</motion.div>
+							<h3 className="text-3xl md:text-4xl font-bold">
+								Our <span className="gradient-text">Core Values</span>
+							</h3>
+							<p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+								These fundamental principles guide every decision we make and every project we
+								deliver
+							</p>
+						</div>
+
+						{/* Values Grid dengan Enhanced Visual */}
 						<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
 							{values.map((value, index) => (
 								<motion.div
 									key={index}
-									className="card-gradient p-6 rounded-xl text-center"
-									whileHover={{ scale: 1.05, y: -5 }}
-									transition={{ duration: 0.3 }}
+									className="group relative"
+									initial={{ opacity: 0, y: 30 }}
+									animate={isInView ? { opacity: 1, y: 0 } : {}}
+									transition={{ duration: 0.6, delay: index * 0.1 }}
+									whileHover={{ scale: 1.05, y: -8 }}
 								>
-									<h4 className="text-lg font-bold mb-3 gradient-text">{value.title}</h4>
-									<p className="text-muted-foreground text-sm leading-relaxed">
-										{value.description}
-									</p>
+									{/* Card dengan gradient border effect */}
+									<div className="card-gradient p-6 rounded-2xl text-center relative overflow-hidden border border-border/50 group-hover:border-primary/30 transition-all duration-300 h-full">
+										{/* Animated gradient background */}
+										<div
+											className={`absolute inset-0 bg-gradient-to-br ${value.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+										/>
+
+										{/* Decorative circle with glow */}
+										<div
+											className={`absolute -right-8 -top-8 w-32 h-32 ${value.bgGlow} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500`}
+										/>
+
+										{/* Content */}
+										<div className="relative z-10">
+											{/* Icon Container dengan enhanced styling */}
+											<div className="relative inline-block mb-4">
+												<motion.div
+													className={`w-16 h-16 mx-auto bg-gradient-to-br ${value.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}
+													whileHover={{ rotate: 12 }}
+												>
+													<value.icon className={`w-8 h-8 ${value.iconColor}`} />
+												</motion.div>
+
+												{/* Icon glow effect */}
+												<div
+													className={`absolute inset-0 ${value.bgGlow} rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-300`}
+												/>
+											</div>
+
+											{/* Title dengan gradient text on hover */}
+											<h4 className="text-lg font-bold mb-3 group-hover:gradient-text transition-all duration-300">
+												{value.title}
+											</h4>
+
+											{/* Description */}
+											<p className="text-muted-foreground text-sm leading-relaxed">
+												{value.description}
+											</p>
+
+											{/* Decorative dot indicators */}
+											<div className="flex justify-center gap-1.5 mt-4">
+												<div
+													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform`}
+												/>
+												<div
+													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform delay-75`}
+												/>
+												<div
+													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform delay-150`}
+												/>
+											</div>
+										</div>
+
+										{/* Animated border on hover */}
+										<div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/20 rounded-2xl transition-colors duration-300" />
+									</div>
 								</motion.div>
 							))}
 						</div>
 					</motion.div>
 
-					{/* Company Info */}
-					<motion.div variants={itemVariants} className="card-gradient p-8 rounded-xl text-center">
-						<h3 className="text-2xl font-bold mb-6">Get in Touch</h3>
-						<div className="grid md:grid-cols-3 gap-6 text-center">
-							<div className="flex flex-col items-center">
-								<MapPin className="w-6 h-6 text-primary mb-2" />
-								<p className="font-medium">Location</p>
-								<p className="text-muted-foreground text-sm">
-									Neo Soho, Jalan Let. Jend. S. Parman Kav. 28 Unit 2011 Tanjung Duren Selatan
-									Subdistrict, Grogol Petamburan District West Jakarta, DKI Jakarta, 11470 Indonesia
-								</p>
-							</div>
-							<div className="flex flex-col items-center">
-								<Mail className="w-6 h-6 text-primary mb-2" />
-								<p className="font-medium">Email</p>
-								<p className="text-muted-foreground text-sm">
-									info@fts.biz.id
-									<br />
-								</p>
-							</div>
-							<div className="flex flex-col items-center">
-								<div className="w-6 h-6 text-primary mb-2 flex items-center justify-center">
-									<span className="text-lg">📞</span>
-								</div>
-								<p className="font-medium">Phone</p>
-								<p className="text-muted-foreground text-sm">
-									+62 895 2933 6179
-									<br />
-								</p>
-							</div>
+					{/* Visit Our Office - Simplified Location Showcase */}
+					<motion.div variants={itemVariants} className="mt-20 relative">
+						{/* Decorative background elements */}
+						<div className="absolute inset-0 -z-10 overflow-hidden">
+							<div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+							<div className="absolute top-1/2 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
 						</div>
+
+						{/* Section Header */}
+						<div className="text-center mb-12 relative">
+							<motion.div
+								className="inline-flex items-center gap-2 mb-4"
+								initial={{ opacity: 0, y: 20 }}
+								animate={isInView ? { opacity: 1, y: 0 } : {}}
+								transition={{ duration: 0.6 }}
+							>
+								<Building2 className="w-5 h-5 text-primary" />
+								<span className="text-primary font-semibold text-sm uppercase tracking-wider">
+									Our Location
+								</span>
+								<Building2 className="w-5 h-5 text-primary" />
+							</motion.div>
+							<h3 className="text-3xl md:text-4xl font-bold mb-4">
+								Visit Our <span className="gradient-text">Office</span>
+							</h3>
+							<p className="text-muted-foreground max-w-2xl mx-auto">
+								Experience Japanese precision and Indonesian hospitality at our modern office in the
+								heart of Jakarta
+							</p>
+						</div>
+
+						{/* Office Showcase Card */}
+						<motion.div
+							className="rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10"
+							whileHover={{ y: -5 }}
+							transition={{ duration: 0.3 }}
+						>
+							{/* Hero Image dengan Office Building */}
+							<div className="relative h-80 sm:h-96 md:h-[28rem] overflow-hidden group">
+								{/* Background Image */}
+								<motion.img
+									src="./images/neosoho.webp"
+									alt="FTS Office - Neo Soho Jakarta"
+									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+								/>
+
+								{/* Gradient Overlay */}
+								<div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-slate-900/75 to-slate-900/90" />
+
+								{/* Content Over Image */}
+								<div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 md:p-12">
+									{/* Top Badge */}
+									<div className="flex justify-start">
+										<motion.div
+											className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 sm:px-5 sm:py-2.5 border border-white/20 shadow-xl"
+											whileHover={{ scale: 1.05 }}
+											transition={{ duration: 0.3 }}
+										>
+											<Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+											<span className="text-white text-xs sm:text-sm font-semibold">
+												Jakarta Headquarters
+											</span>
+										</motion.div>
+									</div>
+
+									{/* Bottom Content */}
+									<div className="max-w-3xl">
+										<motion.h4
+											className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4"
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.6, delay: 0.2 }}
+										>
+											Fujiyama Technology Solutions
+										</motion.h4>
+
+										<motion.div
+											className="flex items-start gap-3 text-white/90 mb-6"
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.6, delay: 0.3 }}
+										>
+											<MapPin className="w-5 h-5 sm:w-6 sm:h-6 mt-1 flex-shrink-0" />
+											<p className="text-sm sm:text-base md:text-lg leading-relaxed">
+												Neo Soho Mall, Jalan Let. Jend. S. Parman Kav. 28 Unit 2011
+												<br />
+												Tanjung Duren Selatan, Grogol Petamburan
+												<br />
+												West Jakarta, DKI Jakarta 11470, Indonesia
+											</p>
+										</motion.div>
+
+										{/* Quick Info Pills */}
+										<motion.div
+											className="flex flex-wrap gap-3"
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ duration: 0.6, delay: 0.4 }}
+										>
+											<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+												<Clock className="w-4 h-4 text-white" />
+												<span className="text-white text-xs sm:text-sm">Mon-Fri: 9 AM - 6 PM</span>
+											</div>
+											<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+												<Phone className="w-4 h-4 text-white" />
+												<span className="text-white text-xs sm:text-sm">+62 895 2933 6179</span>
+											</div>
+										</motion.div>
+									</div>
+								</div>
+
+								{/* Decorative beam effects */}
+								<div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+								<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+							</div>
+
+							{/* Action Bar */}
+							<div className="card-gradient p-6 sm:p-8">
+								<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+									{/* Info Text */}
+									<div className="text-center sm:text-left">
+										<h5 className="font-bold text-lg mb-1">Ready to Start Your Project?</h5>
+										<p className="text-sm text-muted-foreground">
+											Visit us or send a message to discuss your digital transformation needs
+										</p>
+									</div>
+
+									{/* CTA Buttons */}
+									<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+										<Button
+											variant="outline"
+											className="group"
+											onClick={() =>
+												window.open('https://maps.google.com/?q=Neo+Soho+Jakarta', '_blank')
+											}
+										>
+											<MapPin className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+											<span>View Map</span>
+										</Button>
+										<Button
+											className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary group"
+											onClick={() =>
+												document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+											}
+										>
+											<Mail className="w-4 h-4 mr-2" />
+											<span>Contact Us</span>
+											<ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+										</Button>
+									</div>
+								</div>
+							</div>
+						</motion.div>
+
+						{/* Trust Indicators */}
+						<motion.div
+							className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
+							initial={{ opacity: 0, y: 20 }}
+							animate={isInView ? { opacity: 1, y: 0 } : {}}
+							transition={{ duration: 0.6, delay: 0.5 }}
+						>
+							{[
+								{ icon: Building2, label: 'Prime Location', desc: 'Neo Soho Mall' },
+								{ icon: Clock, label: 'Easy Access', desc: 'Central Jakarta' },
+								{ icon: MapPin, label: 'Strategic Hub', desc: 'Business District' },
+								{ icon: Sparkles, label: 'Modern Office', desc: 'Full Facilities' },
+							].map((item, index) => (
+								<motion.div
+									key={index}
+									className="card-gradient p-4 rounded-xl text-center border border-border/50 hover:border-primary/30 transition-all duration-300 group"
+									whileHover={{ scale: 1.05, y: -5 }}
+								>
+									<div className="inline-flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg mb-3 group-hover:bg-primary/20 transition-colors">
+										<item.icon className="w-5 h-5 text-primary" />
+									</div>
+									<h6 className="font-semibold text-sm mb-1">{item.label}</h6>
+									<p className="text-xs text-muted-foreground">{item.desc}</p>
+								</motion.div>
+							))}
+						</motion.div>
 					</motion.div>
 				</motion.div>
 			</div>

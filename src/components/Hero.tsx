@@ -1,6 +1,15 @@
 import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import {
+	ArrowRight,
+	Sparkles,
+	Code2,
+	Smartphone,
+	Cloud,
+	Shield,
+	Zap,
+	TrendingUp,
+} from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { Stars } from '@react-three/drei';
 import { useEffect } from 'react';
@@ -36,8 +45,27 @@ const Hero = () => {
 			repeat: Infinity,
 			repeatType: 'mirror',
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #020617 50%, ${color})`;
+
+	// Quick features untuk showcase
+	const quickFeatures = [
+		{ icon: Code2, label: 'Web Development', color: 'from-blue-500 to-cyan-500' },
+		{ icon: Smartphone, label: 'Mobile Apps', color: 'from-purple-500 to-pink-500' },
+		{ icon: Cloud, label: 'Cloud Solutions', color: 'from-cyan-500 to-blue-500' },
+		{ icon: Shield, label: 'Cybersecurity', color: 'from-red-500 to-orange-500' },
+		{ icon: Zap, label: 'Performance', color: 'from-amber-500 to-yellow-500' },
+		{ icon: TrendingUp, label: 'Digital Growth', color: 'from-green-500 to-emerald-500' },
+	];
+
+	// Stats untuk showcase
+	// const stats = [
+	// 	{ number: '50+', label: 'Projects', sublabel: 'Completed' },
+	// 	{ number: '98%', label: 'Client', sublabel: 'Satisfaction' },
+	// 	{ number: '24/7', label: 'Support', sublabel: 'Available' },
+	// 	{ number: '15+', label: 'Years', sublabel: 'Experience' },
+	// ];
 
 	return (
 		<motion.section
@@ -52,81 +80,105 @@ const Hero = () => {
 				</Canvas>
 			</div>
 
-			{/* Content */}
+			{/* Content - Enhanced Design */}
 			<motion.div
 				variants={containerVariants}
 				initial="hidden"
 				animate="visible"
-				className="relative z-10 text-center max-w-5xl mx-auto px-6 md:px-8"
+				className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 md:px-8"
 			>
+				{/* Badge dengan enhanced styling */}
 				<motion.div
 					variants={itemVariants}
-					className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 md:px-6 md:py-2 mb-8 mt-8 md:mt-0"
+					className="flex justify-center mb-6 sm:mb-8 mt-8 md:mt-0"
 				>
-					<Sparkles className="w-4 h-4 text-white" />
-					<span className="text-white text-sm font-medium">Innovating the Future</span>
+					<div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-white/10 via-white/15 to-white/10 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 sm:px-6 sm:py-2.5 shadow-xl shadow-white/10">
+						<Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-pulse" />
+						<span className="text-white text-xs sm:text-sm font-semibold tracking-wide">
+							🇯🇵 Japanese Quality • 🇮🇩 Indonesian Excellence
+						</span>
+						<Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-pulse" />
+					</div>
 				</motion.div>
 
+				{/* Main Headline - More Powerful */}
 				<motion.h1
 					variants={itemVariants}
-					className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight px-2"
+					className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2"
 				>
-					Building Tomorrow's
-					<span className="block bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-						Digital Solutions
+					<span className="block mb-2">Transforming Ideas Into</span>
+					<span className="block bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent animate-gradient">
+						Powerful Digital Solutions
 					</span>
 				</motion.h1>
 
+				{/* Subtitle - More Compelling */}
 				<motion.p
 					variants={itemVariants}
-					className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed px-4"
+					className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/80 mb-8 sm:mb-10 max-w-4xl mx-auto leading-relaxed px-4"
 				>
-					We transform ideas into powerful digital experiences that drive growth and innovation for
-					businesses worldwide. As a leading <strong>IT services company in Indonesia</strong> with
-					Japanese technology expertise, we deliver cutting-edge web development, mobile
-					applications, cloud solutions, and cybersecurity services.
+					Your trusted technology partner combining{' '}
+					<span className="text-white font-semibold">Japanese precision</span> and{' '}
+					<span className="text-white font-semibold">Indonesian creativity</span> to deliver
+					world-class IT solutions for businesses across Indonesia
 				</motion.p>
 
+				{/* Quick Features Grid - Visual Showcase */}
 				<motion.div
 					variants={itemVariants}
-					className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+					className="grid grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 mb-8 sm:mb-10 max-w-4xl mx-auto"
+				>
+					{quickFeatures.map((feature, index) => (
+						<motion.div
+							key={index}
+							className="group relative"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+							whileHover={{ scale: 1.1, y: -5 }}
+						>
+							<div className="relative bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl p-3 sm:p-4 hover:bg-white/10 hover:border-white/40 transition-all duration-300">
+								{/* Gradient background on hover */}
+								<div
+									className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-20 rounded-xl transition-opacity duration-300`}
+								/>
+
+								{/* Icon */}
+								<div className="relative z-10 flex flex-col items-center gap-1.5 sm:gap-2">
+									<feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white group-hover:scale-110 transition-transform" />
+									<span className="text-[10px] sm:text-xs text-white/80 font-medium text-center leading-tight">
+										{feature.label}
+									</span>
+								</div>
+							</div>
+						</motion.div>
+					))}
+				</motion.div>
+
+				{/* CTA Buttons - Enhanced */}
+				<motion.div
+					variants={itemVariants}
+					className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-10 sm:mb-12"
 				>
 					<Button
 						size="lg"
-						className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-3 rounded-full group"
+						className="w-full sm:w-auto bg-white text-primary hover:bg-white/90 text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-full group shadow-2xl shadow-white/20 hover:shadow-white/30 transition-all duration-300 font-semibold"
 						onClick={() =>
 							document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 						}
 					>
-						Get Started
-						<ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+						Start Your Project
+						<ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-2" />
 					</Button>
 
 					<Button
 						variant="outline"
 						size="lg"
-						className="text-lg px-8 py-3 rounded-full backdrop-blur-sm border-black/20 text-black hover:bg-black/5 dark:border-white/30 dark:text-white dark:hover:bg-white/10"
+						className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-full backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-semibold"
 						onClick={() => (window.location.href = '/projects')}
 					>
-						Our Projects
+						View Portfolio
 					</Button>
-				</motion.div>
-
-				{/* Stats */}
-				<motion.div
-					variants={itemVariants}
-					className="grid grid-cols-3 gap-8 mt-10 pb-5 max-w-md mx-auto"
-				>
-					{[
-						{ number: '500+', label: 'Projects Completed' },
-						{ number: '99%', label: 'Client Satisfaction' },
-						{ number: '24/7', label: 'Support Available' },
-					].map((stat, index) => (
-						<div key={index} className="text-center">
-							<div className="text-2xl md:text-3xl font-bold text-white mb-1">{stat.number}</div>
-							<div className="text-sm text-white/70">{stat.label}</div>
-						</div>
-					))}
 				</motion.div>
 			</motion.div>
 
