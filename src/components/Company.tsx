@@ -417,7 +417,7 @@ const Company = () => {
 							transition={{ duration: 0.3 }}
 						>
 							{/* Hero Image dengan Office Building */}
-							<div className="relative h-80 sm:h-96 md:h-[28rem] overflow-hidden group">
+							<div className="relative h-[32rem] sm:h-[36rem] md:h-[28rem] overflow-hidden group">
 								{/* Background Image */}
 								<motion.img
 									src="./images/neosoho.webp"
@@ -425,13 +425,13 @@ const Company = () => {
 									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
 								/>
 
-								{/* Gradient Overlay */}
-								<div className="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-slate-900/75 to-slate-900/90" />
+								{/* Gradient Overlay - Stronger untuk better readability */}
+								<div className="absolute inset-0 bg-gradient-to-b from-blue-900/75 via-slate-900/85 to-slate-900/95" />
 
-								{/* Content Over Image */}
-								<div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 md:p-12">
+								{/* Content Over Image dengan Better Spacing */}
+								<div className="absolute inset-0 flex flex-col p-5 sm:p-8 md:p-12">
 									{/* Top Badge */}
-									<div className="flex justify-start">
+									<div className="flex justify-start pt-2 mb-auto">
 										<motion.div
 											className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 sm:px-5 sm:py-2.5 border border-white/20 shadow-xl"
 											whileHover={{ scale: 1.05 }}
@@ -444,10 +444,10 @@ const Company = () => {
 										</motion.div>
 									</div>
 
-									{/* Bottom Content */}
-									<div className="max-w-3xl">
+									{/* Bottom Content dengan Closer Spacing to Badge on Mobile */}
+									<div className="max-w-3xl pb-2 mt-auto sm:mt-0">
 										<motion.h4
-											className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4"
+											className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-5 md:mb-6 leading-tight"
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.6, delay: 0.2 }}
@@ -456,35 +456,41 @@ const Company = () => {
 										</motion.h4>
 
 										<motion.div
-											className="flex items-start gap-3 text-white/90 mb-6"
+											className="flex items-start gap-2.5 sm:gap-3 text-white/90 mb-5 sm:mb-6"
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.6, delay: 0.3 }}
 										>
-											<MapPin className="w-5 h-5 sm:w-6 sm:h-6 mt-1 flex-shrink-0" />
-											<p className="text-sm sm:text-base md:text-lg leading-relaxed">
+											<MapPin className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 mt-0.5 sm:mt-1 flex-shrink-0" />
+											<p className="text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
 												Neo Soho Mall, Jalan Let. Jend. S. Parman Kav. 28 Unit 2011
-												<br />
+												<br className="hidden xs:block" />
+												<span className="xs:hidden">, </span>
 												Tanjung Duren Selatan, Grogol Petamburan
-												<br />
+												<br className="hidden xs:block" />
+												<span className="xs:hidden">, </span>
 												West Jakarta, DKI Jakarta 11470, Indonesia
 											</p>
 										</motion.div>
 
-										{/* Quick Info Pills */}
+										{/* Quick Info Pills dengan Better Spacing */}
 										<motion.div
-											className="flex flex-wrap gap-3"
+											className="flex flex-wrap gap-2 sm:gap-3"
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.6, delay: 0.4 }}
 										>
-											<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-												<Clock className="w-4 h-4 text-white" />
-												<span className="text-white text-xs sm:text-sm">Mon-Fri: 9 AM - 6 PM</span>
+											<div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 border border-white/20">
+												<Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
+												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium whitespace-nowrap">
+													Mon-Fri: 9 AM - 6 PM
+												</span>
 											</div>
-											<div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
-												<Phone className="w-4 h-4 text-white" />
-												<span className="text-white text-xs sm:text-sm">+62 895 2933 6179</span>
+											<div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 border border-white/20">
+												<Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
+												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium whitespace-nowrap">
+													+62 895 2933 6179
+												</span>
 											</div>
 										</motion.div>
 									</div>
@@ -495,22 +501,24 @@ const Company = () => {
 								<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 							</div>
 
-							{/* Action Bar */}
-							<div className="card-gradient p-6 sm:p-8">
-								<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-									{/* Info Text */}
-									<div className="text-center sm:text-left">
-										<h5 className="font-bold text-lg mb-1">Ready to Start Your Project?</h5>
-										<p className="text-sm text-muted-foreground">
+							{/* Action Bar dengan Better Mobile Layout */}
+							<div className="card-gradient p-5 sm:p-6 md:p-8">
+								<div className="flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-4">
+									{/* Info Text dengan Better Spacing */}
+									<div className="text-center sm:text-left w-full sm:w-auto">
+										<h5 className="font-bold text-base sm:text-lg mb-2">
+											Ready to Start Your Project?
+										</h5>
+										<p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
 											Visit us or send a message to discuss your digital transformation needs
 										</p>
 									</div>
 
-									{/* CTA Buttons */}
-									<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+									{/* CTA Buttons dengan Better Mobile Layout */}
+									<div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:flex-shrink-0">
 										<Button
 											variant="outline"
-											className="group"
+											className="group w-full sm:w-auto"
 											onClick={() =>
 												window.open('https://maps.google.com/?q=Neo+Soho+Jakarta', '_blank')
 											}
@@ -519,7 +527,7 @@ const Company = () => {
 											<span>View Map</span>
 										</Button>
 										<Button
-											className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary group"
+											className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary group w-full sm:w-auto"
 											onClick={() =>
 												document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 											}
@@ -533,9 +541,9 @@ const Company = () => {
 							</div>
 						</motion.div>
 
-						{/* Trust Indicators */}
+						{/* Trust Indicators dengan Better Mobile Spacing */}
 						<motion.div
-							className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4"
+							className="mt-6 sm:mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
 							initial={{ opacity: 0, y: 20 }}
 							animate={isInView ? { opacity: 1, y: 0 } : {}}
 							transition={{ duration: 0.6, delay: 0.5 }}
@@ -548,14 +556,16 @@ const Company = () => {
 							].map((item, index) => (
 								<motion.div
 									key={index}
-									className="card-gradient p-4 rounded-xl text-center border border-border/50 hover:border-primary/30 transition-all duration-300 group"
+									className="card-gradient p-3 sm:p-4 rounded-xl text-center border border-border/50 hover:border-primary/30 transition-all duration-300 group"
 									whileHover={{ scale: 1.05, y: -5 }}
 								>
-									<div className="inline-flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg mb-3 group-hover:bg-primary/20 transition-colors">
-										<item.icon className="w-5 h-5 text-primary" />
+									<div className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-primary/10 rounded-lg mb-2 sm:mb-3 group-hover:bg-primary/20 transition-colors">
+										<item.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
 									</div>
-									<h6 className="font-semibold text-sm mb-1">{item.label}</h6>
-									<p className="text-xs text-muted-foreground">{item.desc}</p>
+									<h6 className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1">{item.label}</h6>
+									<p className="text-[10px] sm:text-xs text-muted-foreground leading-tight">
+										{item.desc}
+									</p>
 								</motion.div>
 							))}
 						</motion.div>
