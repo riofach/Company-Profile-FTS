@@ -71,11 +71,24 @@ const Navigation = () => {
 	}, []);
 
 	const scrollToSection = (href: string) => {
-		const element = document.querySelector(href);
-		if (element) {
-			element.scrollIntoView({ behavior: 'smooth' });
-		}
+		// Close mobile menu first
 		setIsMobileMenuOpen(false);
+
+		// Delay scroll slightly to allow menu to close smoothly
+		setTimeout(() => {
+			const element = document.querySelector(href);
+			if (element) {
+				// Get navbar height for offset
+				const navbarHeight = 64; // h-16 = 64px
+				const elementPosition = element.getBoundingClientRect().top;
+				const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+				window.scrollTo({
+					top: offsetPosition,
+					behavior: 'smooth',
+				});
+			}
+		}, 150);
 	};
 
 	return (

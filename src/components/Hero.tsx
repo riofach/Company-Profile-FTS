@@ -174,7 +174,7 @@ const Hero = () => {
 					<Button
 						variant="outline"
 						size="lg"
-						className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-full backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-semibold"
+						className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-10 py-4 sm:py-6 rounded-full backdrop-blur-md border-2 border-white/30 dark:border-white/30 text-slate-900 hover:text-slate-600 dark:text-white bg-white/90 dark:bg-white/10 hover:bg-white/80 hover:border-white/60 dark:hover:bg-white/20 dark:hover:border-white/50 transition-all duration-300 font-semibold shadow-lg"
 						onClick={() => (window.location.href = '/projects')}
 					>
 						View Portfolio
