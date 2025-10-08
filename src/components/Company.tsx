@@ -16,6 +16,8 @@ import {
 	Building2,
 	Clock,
 	ArrowRight,
+	Users,
+	Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -135,8 +137,22 @@ const Company = () => {
 					animate={isInView ? 'visible' : 'hidden'}
 					className="max-w-6xl mx-auto"
 				>
-					{/* Section Header */}
-					<motion.div variants={itemVariants} className="text-center mb-12">
+					{/* Section Header - Enhanced */}
+					<motion.div variants={itemVariants} className="text-center mb-16 relative">
+						{/* Top Badge */}
+						<motion.div
+							className="inline-flex items-center gap-2 mb-6"
+							initial={{ opacity: 0, y: 20 }}
+							animate={isInView ? { opacity: 1, y: 0 } : {}}
+							transition={{ duration: 0.6 }}
+						>
+							<Users className="w-5 h-5 text-primary" />
+							<span className="text-primary font-semibold text-sm uppercase tracking-wider">
+								Our Team
+							</span>
+							<Users className="w-5 h-5 text-primary" />
+						</motion.div>
+
 						<h2 className="text-4xl md:text-5xl font-bold mb-6">
 							Meet Our <span className="gradient-text">Team</span>
 						</h2>
@@ -146,130 +162,234 @@ const Company = () => {
 						</p>
 					</motion.div>
 
-					{/* Executive Team Section */}
-					<motion.div variants={itemVariants} className="mb-12">
-						<h3 className="text-2xl font-bold text-center mb-8">
-							Executive <span className="gradient-text">Leadership</span>
-						</h3>
-						<div className="grid md:grid-cols-2 gap-8 mb-12">
+					{/* Executive Team Section - Enhanced */}
+					<motion.div variants={itemVariants} className="mb-20 relative">
+						{/* Decorative background */}
+						<div className="absolute inset-0 -z-10">
+							<div className="absolute top-0 left-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+							<div className="absolute bottom-0 right-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+						</div>
+
+						{/* Section Header */}
+						<motion.div
+							className="text-center mb-12"
+							initial={{ opacity: 0, y: 20 }}
+							animate={isInView ? { opacity: 1, y: 0 } : {}}
+							transition={{ duration: 0.6, delay: 0.2 }}
+						>
+							<div className="inline-flex items-center gap-2 mb-4">
+								<Shield className="w-5 h-5 text-primary" />
+								<h3 className="text-2xl md:text-3xl font-bold">
+									Executive <span className="gradient-text">Leadership</span>
+								</h3>
+								<Shield className="w-5 h-5 text-primary" />
+							</div>
+							<p className="text-sm text-muted-foreground">
+								Visionary leaders driving innovation and excellence
+							</p>
+						</motion.div>
+
+						<div className="grid md:grid-cols-2 gap-8">
 							{executives.map((member, index) => (
 								<motion.div
 									key={index}
-									className="group"
-									whileHover={{ scale: 1.02 }}
-									transition={{ duration: 0.3 }}
+									className="group relative"
+									initial={{ opacity: 0, y: 30 }}
+									animate={isInView ? { opacity: 1, y: 0 } : {}}
+									transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+									whileHover={{ scale: 1.03, y: -8 }}
 								>
-									<div className="card-gradient p-6 rounded-xl text-center">
-										{/* Profile Image */}
-										<div className="relative mb-6">
-											<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition-colors">
-												<img
-													src={member.image}
-													alt={member.name}
-													className="w-full h-full object-cover"
-												/>
+									<div className="card-gradient p-8 rounded-2xl text-center relative overflow-hidden border border-border/50 group-hover:border-primary/30 transition-all duration-300 h-full">
+										{/* Decorative gradient overlay */}
+										<div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+										{/* Decorative glow circles */}
+										<div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
+
+										{/* Content */}
+										<div className="relative z-10">
+											{/* Profile Image - Enhanced */}
+											<div className="relative mb-6">
+												<div className="relative inline-block">
+													{/* Image container */}
+													<div className="w-28 h-28 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/50 transition-all duration-300 shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20">
+														<img
+															src={member.image}
+															alt={member.name}
+															className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+														/>
+													</div>
+													{/* Glow effect */}
+													<div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
+												</div>
+
+												{/* Executive badge */}
+												<div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+													<div className="bg-gradient-to-r from-primary to-primary-light text-white text-xs font-semibold px-3 py-1 rounded-full shadow-lg">
+														Executive
+													</div>
+												</div>
+											</div>
+
+											{/* Member Info */}
+											<h3 className="text-xl font-bold mb-2 group-hover:gradient-text transition-all duration-300">
+												{member.name}
+											</h3>
+											<p className="text-primary text-sm font-semibold mb-4 uppercase tracking-wide">
+												{member.role}
+											</p>
+											<p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+												{member.bio}
+											</p>
+
+											{/* Social Links - Enhanced */}
+											<div className="flex justify-center gap-3">
+												{member.social.linkedin && (
+													<a href={member.social.linkedin} className="group/social relative">
+														<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Linkedin className="w-5 h-5 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
+												{member.social.github && (
+													<a href={member.social.github} className="group/social relative">
+														<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Github className="w-5 h-5 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
+												{member.social.twitter && (
+													<a href={member.social.twitter} className="group/social relative">
+														<div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Twitter className="w-5 h-5 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
 											</div>
 										</div>
 
-										{/* Member Info */}
-										<h3 className="text-lg font-bold mb-1">{member.name}</h3>
-										<p className="text-primary text-sm font-medium mb-3">{member.role}</p>
-										<p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-											{member.bio}
-										</p>
-
-										{/* Social Links */}
-										<div className="flex justify-center space-x-3">
-											{member.social.linkedin && (
-												<a
-													href={member.social.linkedin}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Linkedin className="w-4 h-4 text-primary" />
-												</a>
-											)}
-											{member.social.github && (
-												<a
-													href={member.social.github}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Github className="w-4 h-4 text-primary" />
-												</a>
-											)}
-											{member.social.twitter && (
-												<a
-													href={member.social.twitter}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Twitter className="w-4 h-4 text-primary" />
-												</a>
-											)}
-										</div>
+										{/* Bottom accent line */}
+										<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 									</div>
 								</motion.div>
 							))}
 						</div>
 					</motion.div>
 
-					{/* Directors Team Section */}
-					<motion.div variants={itemVariants}>
-						<h3 className="text-2xl font-bold text-center mb-8">
-							Our <span className="gradient-text">Directors</span>
-						</h3>
-						<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+					{/* Directors Team Section - Enhanced */}
+					<motion.div variants={itemVariants} className="relative">
+						{/* Decorative background */}
+						<div className="absolute inset-0 -z-10">
+							<div className="absolute top-1/2 left-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+							<div className="absolute top-1/2 right-1/4 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+						</div>
+
+						{/* Section Header */}
+						<motion.div
+							className="text-center mb-12"
+							initial={{ opacity: 0, y: 20 }}
+							animate={isInView ? { opacity: 1, y: 0 } : {}}
+							transition={{ duration: 0.6, delay: 0.5 }}
+						>
+							<div className="inline-flex items-center gap-2 mb-4">
+								<Users className="w-5 h-5 text-primary" />
+								<h3 className="text-2xl md:text-3xl font-bold">
+									Our <span className="gradient-text">Directors</span>
+								</h3>
+								<Users className="w-5 h-5 text-primary" />
+							</div>
+							<p className="text-sm text-muted-foreground">
+								Strategic minds shaping our company's future
+							</p>
+						</motion.div>
+
+						<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
 							{directors.map((member, index) => (
 								<motion.div
 									key={index}
-									className="group"
-									whileHover={{ scale: 1.02 }}
-									transition={{ duration: 0.3 }}
+									className="group relative"
+									initial={{ opacity: 0, y: 30 }}
+									animate={isInView ? { opacity: 1, y: 0 } : {}}
+									transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+									whileHover={{ scale: 1.05, y: -8 }}
 								>
-									<div className="card-gradient p-6 rounded-xl text-center">
-										{/* Profile Image */}
-										<div className="relative mb-6">
-											<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/40 transition-colors">
-												<img
-													src={member.image}
-													alt={member.name}
-													className="w-full h-full object-cover"
-												/>
+									<div className="card-gradient p-6 rounded-2xl text-center relative overflow-hidden border border-border/50 group-hover:border-primary/30 transition-all duration-300 h-full">
+										{/* Decorative gradient overlay */}
+										<div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+										{/* Decorative glow circle */}
+										<div className="absolute -right-6 -top-6 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+
+										{/* Content */}
+										<div className="relative z-10">
+											{/* Profile Image - Enhanced */}
+											<div className="relative mb-5">
+												<div className="relative inline-block">
+													{/* Image container */}
+													<div className="w-24 h-24 mx-auto rounded-full overflow-hidden ring-4 ring-primary/20 group-hover:ring-primary/50 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:shadow-primary/20">
+														<img
+															src={member.image}
+															alt={member.name}
+															className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+														/>
+													</div>
+													{/* Glow effect */}
+													<div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
+												</div>
+
+												{/* Director badge */}
+												<div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+													<div className="bg-gradient-to-r from-primary/80 to-primary-light/80 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full shadow-md">
+														Director
+													</div>
+												</div>
+											</div>
+
+											{/* Member Info */}
+											<h3 className="text-lg font-bold mb-2 group-hover:gradient-text transition-all duration-300">
+												{member.name}
+											</h3>
+											<p className="text-primary text-xs font-semibold mb-3 uppercase tracking-wide">
+												{member.role}
+											</p>
+											<p className="text-muted-foreground text-sm mb-5 leading-relaxed line-clamp-4">
+												{member.bio}
+											</p>
+
+											{/* Social Links - Enhanced */}
+											<div className="flex justify-center gap-2">
+												{member.social.linkedin && (
+													<a href={member.social.linkedin} className="group/social relative">
+														<div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Linkedin className="w-4 h-4 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-lg blur-md opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
+												{member.social.github && (
+													<a href={member.social.github} className="group/social relative">
+														<div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Github className="w-4 h-4 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-lg blur-md opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
+												{member.social.twitter && (
+													<a href={member.social.twitter} className="group/social relative">
+														<div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center hover:bg-gradient-to-br hover:from-primary hover:to-primary-light transition-all duration-300 group-hover/social:scale-110 group-hover/social:rotate-6">
+															<Twitter className="w-4 h-4 text-primary group-hover/social:text-white transition-colors" />
+														</div>
+														<div className="absolute inset-0 bg-primary/20 rounded-lg blur-md opacity-0 group-hover/social:opacity-50 transition-opacity" />
+													</a>
+												)}
 											</div>
 										</div>
 
-										{/* Member Info */}
-										<h3 className="text-lg font-bold mb-1">{member.name}</h3>
-										<p className="text-primary text-sm font-medium mb-3">{member.role}</p>
-										<p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-											{member.bio}
-										</p>
-
-										{/* Social Links */}
-										<div className="flex justify-center space-x-3">
-											{member.social.linkedin && (
-												<a
-													href={member.social.linkedin}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Linkedin className="w-4 h-4 text-primary" />
-												</a>
-											)}
-											{member.social.github && (
-												<a
-													href={member.social.github}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Github className="w-4 h-4 text-primary" />
-												</a>
-											)}
-											{member.social.twitter && (
-												<a
-													href={member.social.twitter}
-													className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors"
-												>
-													<Twitter className="w-4 h-4 text-primary" />
-												</a>
-											)}
-										</div>
+										{/* Bottom accent line */}
+										<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 									</div>
 								</motion.div>
 							))}
