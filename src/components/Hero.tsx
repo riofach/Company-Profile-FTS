@@ -90,7 +90,7 @@ const Hero = () => {
 				{/* Badge dengan enhanced styling */}
 				<motion.div
 					variants={itemVariants}
-					className="flex justify-center mb-6 sm:mb-8 mt-8 md:mt-0"
+					className="flex justify-center mb-6 sm:mb-8 mt-12 md:mt-0"
 				>
 					<div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-white/10 via-white/15 to-white/10 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 sm:px-6 sm:py-2.5 shadow-xl shadow-white/10">
 						<Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-pulse" />
@@ -183,7 +183,7 @@ const Hero = () => {
 			</motion.div>
 
 			{/* Scroll Indicator */}
-			<motion.div
+			{/* <motion.div
 				animate={{ y: [0, 10, 0] }}
 				transition={{ duration: 2, repeat: Infinity }}
 				className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
@@ -191,7 +191,7 @@ const Hero = () => {
 				<div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
 					<div className="w-1 h-3 bg-white/60 rounded-full mt-2" />
 				</div>
-			</motion.div>
+			</motion.div> */}
 		</motion.section>
 	);
 };

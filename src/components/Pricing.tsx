@@ -40,9 +40,6 @@ const Pricing = () => {
 			popular: false,
 			cta: 'Get Started',
 			icon: Zap,
-			color: 'from-blue-500/20 to-cyan-500/20',
-			iconColor: 'text-blue-500',
-			bgGlow: 'bg-blue-500/10',
 		},
 		{
 			name: 'Up to 10 Pages',
@@ -51,9 +48,6 @@ const Pricing = () => {
 			popular: true,
 			cta: 'Most Popular',
 			icon: Rocket,
-			color: 'from-purple-500/20 to-pink-500/20',
-			iconColor: 'text-purple-500',
-			bgGlow: 'bg-purple-500/10',
 		},
 		{
 			name: 'Up to 15 Pages',
@@ -62,9 +56,6 @@ const Pricing = () => {
 			popular: false,
 			cta: 'Contact Us',
 			icon: Crown,
-			color: 'from-amber-500/20 to-orange-500/20',
-			iconColor: 'text-amber-500',
-			bgGlow: 'bg-amber-500/10',
 		},
 	];
 
@@ -78,10 +69,10 @@ const Pricing = () => {
 
 	return (
 		<section ref={ref} id="pricing" className="py-20 bg-background relative overflow-hidden">
-			{/* Decorative background elements */}
+			{/* Subtle decorative background */}
 			<div className="absolute inset-0 -z-10">
-				<div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-				<div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+				<div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
+				<div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
 			</div>
 
 			<div className="container mx-auto px-4">
@@ -150,66 +141,45 @@ const Pricing = () => {
 								animate={isInView ? { opacity: 1, y: 0 } : {}}
 								transition={{ duration: 0.6, delay: index * 0.1 }}
 							>
-								{/* Popular Badge - Enhanced */}
+								{/* Popular Badge - Simplified */}
 								{plan.popular && (
 									<motion.div
 										className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10"
-										initial={{ scale: 0 }}
-										animate={{ scale: 1 }}
-										transition={{ duration: 0.5, delay: 0.5 }}
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.4, delay: 0.3 }}
 									>
-										<div className="relative">
-											<Badge className="bg-gradient-to-r from-primary to-primary-light text-white px-5 py-2 rounded-full shadow-lg shadow-primary/30">
-												<Star className="w-4 h-4 mr-1.5 fill-current" />
-												Most Popular
-											</Badge>
-											<div className="absolute inset-0 bg-primary/30 rounded-full blur-lg -z-10" />
-										</div>
+										<Badge className="bg-primary text-white px-4 py-1.5 rounded-full shadow-md">
+											<Star className="w-3.5 h-3.5 mr-1.5 fill-current" />
+											Most Popular
+										</Badge>
 									</motion.div>
 								)}
 
 								{/* Card Container */}
 								<motion.div
-									className={`card-gradient p-8 rounded-2xl h-full transition-all duration-300 relative overflow-hidden border border-border/50 ${
+									className={`card-gradient p-8 rounded-2xl h-full transition-all duration-300 relative overflow-hidden border ${
 										plan.popular
-											? 'ring-2 ring-primary/50 ring-offset-2 ring-offset-background shadow-xl shadow-primary/10'
-											: 'hover:border-primary/30'
+											? 'border-primary/50 shadow-lg shadow-primary/5'
+											: 'border-border/50 hover:border-primary/30 hover:shadow-md'
 									}`}
-									whileHover={{ scale: plan.popular ? 1.03 : 1.02, y: -8 }}
+									whileHover={{ y: -4 }}
 									transition={{ duration: 0.3 }}
 								>
-									{/* Animated gradient background */}
-									<div
-										className={`absolute inset-0 bg-gradient-to-br ${plan.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-									/>
-
-									{/* Decorative circle glow */}
-									<div
-										className={`absolute -right-8 -top-8 w-40 h-40 ${plan.bgGlow} rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500`}
-									/>
+									{/* Subtle background glow on hover - only for popular */}
+									{plan.popular && <div className="absolute inset-0 bg-primary/5 opacity-100" />}
 
 									{/* Content */}
 									<div className="relative z-10">
-										{/* Icon Header */}
+										{/* Icon Header - Simplified */}
 										<div className="flex justify-center mb-6">
-											<div className="relative">
-												<motion.div
-													className={`w-16 h-16 bg-gradient-to-br ${plan.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}
-													whileHover={{ rotate: 12 }}
-												>
-													<plan.icon className={`w-8 h-8 ${plan.iconColor}`} />
-												</motion.div>
-												{/* Icon glow */}
-												<div
-													className={`absolute inset-0 ${plan.bgGlow} rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-300`}
-												/>
+											<div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-primary/15">
+												<plan.icon className="w-7 h-7 text-primary" />
 											</div>
 										</div>
 
 										{/* Plan Name */}
-										<h3 className="text-2xl font-bold text-center mb-6 group-hover:gradient-text transition-all duration-300">
-											{plan.name}
-										</h3>
+										<h3 className="text-2xl font-bold text-center mb-6">{plan.name}</h3>
 
 										{/* Pricing Display */}
 										{plan.serverFeeIdr !== null ? (
@@ -236,23 +206,19 @@ const Pricing = () => {
 											</p>
 										)}
 
-										{/* Features List */}
+										{/* Features List - Simplified */}
 										<ul className="space-y-4 mb-8">
 											{plan.serverFeeIdr !== null ? (
 												<>
-													<li className="flex items-start group/item">
-														<div className="relative">
-															<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform" />
-														</div>
+													<li className="flex items-start">
+														<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
 														<span className="text-sm leading-relaxed">
 															Website design & development:{' '}
 															<span className="font-semibold text-primary">FREE</span>
 														</span>
 													</li>
-													<li className="flex items-start group/item">
-														<div className="relative">
-															<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform" />
-														</div>
+													<li className="flex items-start">
+														<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
 														<span className="text-sm leading-relaxed">
 															Server fee: {formatMonthly(plan.serverFeeIdr)} (≈{' '}
 															{showUSD
@@ -263,8 +229,8 @@ const Pricing = () => {
 													</li>
 												</>
 											) : (
-												<li className="flex items-start group/item">
-													<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform" />
+												<li className="flex items-start">
+													<Check className="w-5 h-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
 													<span className="text-sm leading-relaxed">
 														Quotation available upon request
 													</span>
@@ -272,12 +238,10 @@ const Pricing = () => {
 											)}
 										</ul>
 
-										{/* CTA Button */}
+										{/* CTA Button - Simplified */}
 										<Button
-											className={`w-full group/btn ${
-												plan.popular
-													? 'bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary shadow-lg shadow-primary/30'
-													: 'hover:bg-gradient-to-r hover:from-primary hover:to-primary-light hover:text-white'
+											className={`w-full ${
+												plan.popular ? 'bg-primary hover:bg-primary/90 shadow-md' : ''
 											}`}
 											variant={plan.popular ? 'default' : 'outline'}
 											size="lg"
@@ -286,86 +250,62 @@ const Pricing = () => {
 											}
 										>
 											<span className="font-semibold">{plan.cta}</span>
-											{plan.popular && (
-												<Star className="w-4 h-4 ml-2 group-hover/btn:rotate-12 transition-transform fill-current" />
-											)}
+											{plan.popular && <Star className="w-4 h-4 ml-2 fill-current" />}
 										</Button>
 									</div>
-
-									{/* Bottom accent line */}
-									<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 								</motion.div>
 							</motion.div>
 						))}
 					</div>
 
-					{/* More than 15 Pages - Enhanced Visual Design */}
+					{/* More than 15 Pages - Simplified */}
 					<motion.div
 						variants={itemVariants}
 						className="relative group"
-						whileHover={{ scale: 1.02 }}
+						whileHover={{ y: -4 }}
 						transition={{ duration: 0.3 }}
 					>
-						<div className="card-gradient p-10 sm:p-12 rounded-2xl max-w-3xl mx-auto relative overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300">
-							{/* Decorative background gradient */}
-							<div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-							{/* Decorative circles */}
-							<div className="absolute -left-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
-							<div className="absolute -right-8 -bottom-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500" />
-
+						<div className="card-gradient p-10 sm:p-12 rounded-2xl max-w-3xl mx-auto relative overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-md transition-all duration-300">
 							{/* Content */}
 							<div className="relative z-10 text-center">
-								{/* Icon */}
+								{/* Icon - Simplified */}
 								<div className="flex justify-center mb-6">
-									<div className="relative">
-										<motion.div
-											className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary-light/20 rounded-3xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg"
-											whileHover={{ rotate: 12 }}
-										>
-											<Crown className="w-10 h-10 text-primary" />
-										</motion.div>
-										{/* Icon glow */}
-										<div className="absolute inset-0 bg-primary/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-300" />
+									<div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-primary/15">
+										<Crown className="w-8 h-8 text-primary" />
 									</div>
 								</div>
 
-								<h3 className="text-3xl sm:text-4xl font-bold mb-4 group-hover:gradient-text transition-all duration-300">
-									More than 15 Pages
-								</h3>
+								<h3 className="text-3xl sm:text-4xl font-bold mb-4">More than 15 Pages</h3>
 								<p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
 									Quotation available upon request. Kami akan menyesuaikan scope, fitur, dan
 									timeline sesuai kebutuhan Anda.
 								</p>
 
-								{/* CTA Buttons */}
+								{/* CTA Buttons - Simplified */}
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Button
 										variant="outline"
 										size="lg"
-										className="group/btn hover:bg-gradient-to-r hover:from-primary hover:to-primary-light hover:text-white hover:border-primary transition-all duration-300"
+										className="font-semibold"
 										onClick={() =>
 											document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 										}
 									>
-										<Sparkles className="w-4 h-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-										<span className="font-semibold">Request Quote</span>
+										<Sparkles className="w-4 h-4 mr-2" />
+										Request Quote
 									</Button>
 									<Button
 										size="lg"
-										className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary shadow-lg shadow-primary/30 group/btn"
+										className="bg-primary hover:bg-primary/90 shadow-md font-semibold"
 										onClick={() =>
 											document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 										}
 									>
-										<span className="font-semibold">Discuss Requirements</span>
-										<Rocket className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+										Discuss Requirements
+										<Rocket className="w-4 h-4 ml-2" />
 									</Button>
 								</div>
 							</div>
-
-							{/* Bottom accent line */}
-							<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 						</div>
 					</motion.div>
 				</motion.div>
