@@ -547,20 +547,20 @@ const Company = () => {
 
 										{/* Quick Info Pills dengan Better Spacing */}
 										<motion.div
-											className="flex flex-wrap gap-2 sm:gap-3"
+											className="flex flex-col sm:flex-row gap-2 sm:gap-3"
 											initial={{ opacity: 0, y: 20 }}
 											animate={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.6, delay: 0.4 }}
 										>
 											<div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 border border-white/20">
 												<Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
-												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium whitespace-nowrap">
+												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
 													Mon-Fri: 9 AM - 6 PM
 												</span>
 											</div>
 											<div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 border border-white/20">
 												<Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white flex-shrink-0" />
-												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium whitespace-nowrap">
+												<span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
 													+62 895 2933 6179
 												</span>
 											</div>
@@ -615,7 +615,7 @@ const Company = () => {
 
 						{/* Trust Indicators dengan Better Mobile Spacing */}
 						<motion.div
-							className="mt-6 sm:mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
+							className="mt-6 sm:mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 px-2"
 							initial={{ opacity: 0, y: 20 }}
 							animate={isInView ? { opacity: 1, y: 0 } : {}}
 							transition={{ duration: 0.6, delay: 0.5 }}

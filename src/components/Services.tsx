@@ -158,7 +158,7 @@ const Services = () => {
 
 					{/* Stats Section dengan Visual */}
 					<motion.div variants={itemVariants} className="mb-16">
-						<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 px-2">
 							{stats.map((stat, index) => (
 								<motion.div
 									key={index}
@@ -183,7 +183,7 @@ const Services = () => {
 					</motion.div>
 
 					{/* Services Grid - Simplified */}
-					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-2">
 						{services.map((service, index) => (
 							<motion.div key={index} variants={itemVariants} className="group">
 								<motion.div
