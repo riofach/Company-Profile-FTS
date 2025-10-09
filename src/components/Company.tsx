@@ -494,7 +494,8 @@ const Company = () => {
 								<motion.img
 									src="./images/neosoho.webp"
 									alt="FTS Office - Neo Soho Jakarta"
-									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 max-w-full"
+									style={{ maxWidth: '100%', height: 'auto' }}
 								/>
 
 								{/* Gradient Overlay - Stronger untuk better readability */}

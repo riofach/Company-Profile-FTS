@@ -197,7 +197,8 @@ const Services = () => {
 										<img
 											src={service.image}
 											alt={service.title}
-											className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+											className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 max-w-full"
+											style={{ maxWidth: '100%', height: 'auto' }}
 										/>
 
 										{/* Consistent Gradient Overlay - Primary Blue */}
