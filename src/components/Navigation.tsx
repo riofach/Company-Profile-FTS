@@ -95,7 +95,7 @@ const Navigation = () => {
 		<motion.nav
 			initial={{ y: -100 }}
 			animate={{ y: 0 }}
-			className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-sm ${
+			className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-sm overflow-x-hidden ${
 				isScrolled
 					? 'border-b bg-white/95 shadow-sm dark:bg-gray-950/95'
 					: 'bg-white/80 dark:bg-gray-950/80'
@@ -168,9 +168,9 @@ const Navigation = () => {
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: 'auto' }}
 							exit={{ opacity: 0, height: 0 }}
-							className="md:hidden border-t bg-white/95 backdrop-blur-sm dark:bg-gray-950/95"
+							className="md:hidden border-t bg-white/95 backdrop-blur-sm dark:bg-gray-950/95 overflow-x-hidden"
 						>
-							<div className="py-4 space-y-2">
+							<div className="py-4 space-y-2 px-4">
 								{navItems.map((item) => (
 									<button
 										key={item.name}

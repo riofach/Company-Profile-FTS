@@ -88,43 +88,31 @@ const Company = () => {
 		},
 	];
 
-	// Company values dengan icon dan warna yang lebih menarik
+	// Company values - Simplified with consistent theme
 	const values = [
 		{
 			icon: Lightbulb,
 			title: 'Innovation',
 			description:
 				'We embrace cutting-edge technologies and creative solutions to solve complex challenges.',
-			color: 'from-amber-500/20 to-orange-500/20',
-			iconColor: 'text-amber-500',
-			bgGlow: 'bg-amber-500/10',
 		},
 		{
 			icon: Award,
 			title: 'Quality',
 			description:
 				'Every project is delivered with meticulous attention to detail and the highest standards.',
-			color: 'from-blue-500/20 to-cyan-500/20',
-			iconColor: 'text-blue-500',
-			bgGlow: 'bg-blue-500/10',
 		},
 		{
 			icon: Target,
 			title: 'Transparency',
 			description:
 				'Open communication and honest partnerships are the foundation of our relationships.',
-			color: 'from-green-500/20 to-emerald-500/20',
-			iconColor: 'text-green-500',
-			bgGlow: 'bg-green-500/10',
 		},
 		{
 			icon: TrendingUp,
 			title: 'Growth',
 			description:
 				"We're committed to continuous learning and helping our clients achieve sustainable growth.",
-			color: 'from-purple-500/20 to-pink-500/20',
-			iconColor: 'text-purple-500',
-			bgGlow: 'bg-purple-500/10',
 		},
 	];
 
@@ -396,15 +384,15 @@ const Company = () => {
 						</div>
 					</motion.div>
 
-					{/* Company Values - Enhanced Visual Design */}
+					{/* Company Values - Simplified */}
 					<motion.div variants={itemVariants} className="mt-20 relative">
-						{/* Decorative background elements */}
+						{/* Subtle decorative background */}
 						<div className="absolute inset-0 -z-10">
-							<div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-							<div className="absolute top-1/2 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+							<div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/3 rounded-full blur-3xl" />
+							<div className="absolute top-1/2 right-1/4 w-64 h-64 bg-primary/3 rounded-full blur-3xl" />
 						</div>
 
-						{/* Section Header dengan decorative element */}
+						{/* Section Header - Simplified */}
 						<div className="text-center mb-12 relative">
 							<motion.div
 								className="inline-flex items-center gap-2 mb-4"
@@ -427,7 +415,7 @@ const Company = () => {
 							</p>
 						</div>
 
-						{/* Values Grid dengan Enhanced Visual */}
+						{/* Values Grid - Simplified */}
 						<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
 							{values.map((value, index) => (
 								<motion.div
@@ -436,63 +424,27 @@ const Company = () => {
 									initial={{ opacity: 0, y: 30 }}
 									animate={isInView ? { opacity: 1, y: 0 } : {}}
 									transition={{ duration: 0.6, delay: index * 0.1 }}
-									whileHover={{ scale: 1.05, y: -8 }}
+									whileHover={{ y: -4 }}
 								>
-									{/* Card dengan gradient border effect */}
-									<div className="card-gradient p-6 rounded-2xl text-center relative overflow-hidden border border-border/50 group-hover:border-primary/30 transition-all duration-300 h-full">
-										{/* Animated gradient background */}
-										<div
-											className={`absolute inset-0 bg-gradient-to-br ${value.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-										/>
-
-										{/* Decorative circle with glow */}
-										<div
-											className={`absolute -right-8 -top-8 w-32 h-32 ${value.bgGlow} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500`}
-										/>
-
+									{/* Card - Simplified */}
+									<div className="card-gradient p-6 rounded-2xl text-center relative overflow-hidden border border-border/50 hover:border-primary/30 hover:shadow-md transition-all duration-300 h-full">
 										{/* Content */}
 										<div className="relative z-10">
-											{/* Icon Container dengan enhanced styling */}
-											<div className="relative inline-block mb-4">
-												<motion.div
-													className={`w-16 h-16 mx-auto bg-gradient-to-br ${value.color} rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}
-													whileHover={{ rotate: 12 }}
-												>
-													<value.icon className={`w-8 h-8 ${value.iconColor}`} />
-												</motion.div>
-
-												{/* Icon glow effect */}
-												<div
-													className={`absolute inset-0 ${value.bgGlow} rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-300`}
-												/>
+											{/* Icon Container - Simplified */}
+											<div className="inline-block mb-4">
+												<div className="w-14 h-14 mx-auto bg-primary/10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:bg-primary/15">
+													<value.icon className="w-7 h-7 text-primary" />
+												</div>
 											</div>
 
-											{/* Title dengan gradient text on hover */}
-											<h4 className="text-lg font-bold mb-3 group-hover:gradient-text transition-all duration-300">
-												{value.title}
-											</h4>
+											{/* Title */}
+											<h4 className="text-lg font-bold mb-3">{value.title}</h4>
 
 											{/* Description */}
 											<p className="text-muted-foreground text-sm leading-relaxed">
 												{value.description}
 											</p>
-
-											{/* Decorative dot indicators */}
-											<div className="flex justify-center gap-1.5 mt-4">
-												<div
-													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform`}
-												/>
-												<div
-													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform delay-75`}
-												/>
-												<div
-													className={`w-1.5 h-1.5 rounded-full ${value.bgGlow} group-hover:scale-150 transition-transform delay-150`}
-												/>
-											</div>
 										</div>
-
-										{/* Animated border on hover */}
-										<div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/20 rounded-2xl transition-colors duration-300" />
 									</div>
 								</motion.div>
 							))}

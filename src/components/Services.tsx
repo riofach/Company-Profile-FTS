@@ -51,7 +51,6 @@ const Services = () => {
 				'Responsive Web Design',
 			],
 			image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&q=80',
-			gradient: 'from-blue-600/70 via-blue-800/80 to-slate-900/85',
 		},
 		{
 			icon: Smartphone,
@@ -65,7 +64,6 @@ const Services = () => {
 				'App Store Optimization',
 			],
 			image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80',
-			gradient: 'from-purple-600/70 via-purple-800/80 to-slate-900/85',
 		},
 		{
 			icon: Cloud,
@@ -79,7 +77,6 @@ const Services = () => {
 				'Auto-scaling Solutions',
 			],
 			image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80',
-			gradient: 'from-cyan-600/70 via-cyan-800/80 to-slate-900/85',
 		},
 		{
 			icon: Shield,
@@ -93,7 +90,6 @@ const Services = () => {
 				'24/7 Security Monitoring',
 			],
 			image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80',
-			gradient: 'from-red-600/70 via-red-800/80 to-slate-900/85',
 		},
 		{
 			icon: Zap,
@@ -107,7 +103,6 @@ const Services = () => {
 				'Performance Monitoring Tools',
 			],
 			image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-			gradient: 'from-amber-600/70 via-orange-800/80 to-slate-900/85',
 		},
 		{
 			icon: Globe,
@@ -121,7 +116,6 @@ const Services = () => {
 				'Market Analysis & Research',
 			],
 			image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-			gradient: 'from-green-600/70 via-emerald-800/80 to-slate-900/85',
 		},
 	];
 
@@ -135,10 +129,10 @@ const Services = () => {
 
 	return (
 		<section ref={ref} id="services" className="py-20 bg-muted/30 relative overflow-hidden">
-			{/* Decorative Background Elements */}
+			{/* Subtle Decorative Background */}
 			<div className="absolute inset-0 -z-10">
-				<div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-				<div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+				<div className="absolute top-20 left-10 w-72 h-72 bg-primary/3 rounded-full blur-3xl" />
+				<div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
 			</div>
 
 			<div className="container mx-auto px-4">
@@ -168,13 +162,13 @@ const Services = () => {
 							{stats.map((stat, index) => (
 								<motion.div
 									key={index}
-									className="card-gradient p-6 rounded-xl text-center relative overflow-hidden group"
-									whileHover={{ scale: 1.05, y: -5 }}
+									className="card-gradient p-6 rounded-xl text-center relative overflow-hidden group border border-border/50 hover:border-primary/30 hover:shadow-md transition-all duration-300"
+									whileHover={{ y: -4 }}
 									transition={{ duration: 0.3 }}
 								>
-									{/* Decorative background icon */}
-									<div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
-										<stat.icon className="w-24 h-24 text-primary" />
+									{/* Elegant decorative background icon */}
+									<div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+										<stat.icon className="w-20 h-20 text-primary" />
 									</div>
 
 									<div className="relative z-10">
@@ -183,61 +177,44 @@ const Services = () => {
 										</div>
 										<div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
 									</div>
-
-									{/* Animated border */}
-									<div className="absolute inset-0 border-2 border-primary/0 group-hover:border-primary/20 rounded-xl transition-colors" />
 								</motion.div>
 							))}
 						</div>
 					</motion.div>
 
-					{/* Services Grid dengan Image Integration */}
+					{/* Services Grid - Simplified */}
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{services.map((service, index) => (
 							<motion.div key={index} variants={itemVariants} className="group">
 								<motion.div
-									className="rounded-xl h-full hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative overflow-hidden border border-border/50 group-hover:border-primary/30 bg-card"
-									whileHover={{ scale: 1.02, y: -5 }}
+									className="rounded-xl h-full hover:shadow-md transition-all duration-300 relative overflow-hidden border border-border/50 hover:border-primary/30 bg-card"
+									whileHover={{ y: -4 }}
 									transition={{ duration: 0.3 }}
 								>
-									{/* Image Header Section dengan Gradient Overlay */}
+									{/* Image Header Section - Simplified */}
 									<div className="relative h-48 overflow-hidden">
 										{/* Background Image */}
 										<img
 											src={service.image}
 											alt={service.title}
-											className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+											className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 										/>
 
-										{/* Gradient Overlay untuk readability (support light/dark mode) */}
-										<div
-											className={`absolute inset-0 bg-gradient-to-b ${service.gradient} dark:${service.gradient}`}
-										/>
+										{/* Consistent Gradient Overlay - Primary Blue */}
+										<div className="absolute inset-0 bg-gradient-to-b from-blue-600/70 via-blue-800/80 to-slate-900/85" />
 
 										{/* Content di atas image */}
 										<div className="absolute inset-0 flex flex-col justify-between p-6">
-											{/* Icon di top-left dengan glass effect */}
-											<div className="relative w-fit">
-												<motion.div
-													className="inline-flex items-center justify-center w-14 h-14 bg-white/10 dark:bg-white/20 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300"
-													whileHover={{ rotate: 12 }}
-												>
-													<service.icon className="w-7 h-7 text-white" />
-												</motion.div>
-												{/* Icon glow effect */}
-												<div className="absolute inset-0 bg-white/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
+											{/* Icon di top-left - Simplified */}
+											<div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center justify-center">
+												<service.icon className="w-6 h-6 text-white" />
 											</div>
 
 											{/* Title di bottom dengan backdrop blur */}
-											<div className="bg-black/20 dark:bg-black/40 backdrop-blur-sm rounded-lg p-3 border border-white/10">
-												<h3 className="text-lg font-bold text-white group-hover:text-white transition-colors">
-													{service.title}
-												</h3>
+											<div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+												<h3 className="text-lg font-bold text-white">{service.title}</h3>
 											</div>
 										</div>
-
-										{/* Decorative gradient beam effect */}
-										<div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 group-hover:via-white/10 transition-colors duration-500" />
 									</div>
 
 									{/* Content Section */}
@@ -247,7 +224,7 @@ const Services = () => {
 											{service.description}
 										</p>
 
-										{/* Features dengan enhanced bullets */}
+										{/* Features - Simplified */}
 										<ul className="space-y-2.5">
 											{service.features.map((feature, featureIndex) => (
 												<li
@@ -260,29 +237,26 @@ const Services = () => {
 											))}
 										</ul>
 
-										{/* CTA Button dengan icon dan gradient */}
+										{/* CTA Button - Simplified */}
 										<Button
 											variant="outline"
-											className="w-full group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary/80 group-hover:text-white group-hover:border-primary transition-all duration-300 group/btn mt-4"
+											className="w-full mt-4"
 											onClick={() =>
 												document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 											}
 										>
 											<span className="font-semibold">Learn More</span>
-											<ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+											<ArrowRight className="w-4 h-4 ml-2" />
 										</Button>
 									</div>
-
-									{/* Bottom decorative gradient line */}
-									<div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 								</motion.div>
 							</motion.div>
 						))}
 					</div>
 
-					{/* Bottom CTA */}
+					{/* Bottom CTA - Simplified */}
 					<motion.div variants={itemVariants} className="text-center mt-16">
-						<div className="card-gradient p-8 rounded-xl max-w-2xl mx-auto">
+						<div className="card-gradient p-8 rounded-xl max-w-2xl mx-auto border border-border/50">
 							<h3 className="text-2xl font-bold mb-4">Need a Custom Solution?</h3>
 							<p className="text-muted-foreground mb-6">
 								We specialize in creating tailored solutions that fit your unique business
@@ -290,7 +264,7 @@ const Services = () => {
 							</p>
 							<Button
 								size="lg"
-								className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
+								className="bg-primary hover:bg-primary/90 shadow-md"
 								onClick={() =>
 									document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
 								}
