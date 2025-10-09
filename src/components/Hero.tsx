@@ -146,7 +146,7 @@ const Hero = () => {
 								{/* Icon */}
 								<div className="relative z-10 flex flex-col items-center gap-1.5 sm:gap-2">
 									<feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white group-hover:scale-110 transition-transform" />
-									<span className="text-[10px] sm:text-xs text-white/80 font-medium text-center leading-tight">
+									<span className="text-[10px] sm:text-xs text-white/80 font-medium text-center leading-tight break-words">
 										{feature.label}
 									</span>
 								</div>

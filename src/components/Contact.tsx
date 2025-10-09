@@ -384,7 +384,8 @@ const Contact = () => {
 								height="100%"
 								loading="lazy"
 								referrerPolicy="no-referrer-when-downgrade"
-								className="absolute inset-0 border-0 filter grayscale-0 dark:grayscale"
+								className="absolute inset-0 border-0 filter grayscale-0 dark:grayscale max-w-full"
+								style={{ maxWidth: '100%', width: '100%' }}
 							/>
 						</div>
 					</div>
