@@ -126,7 +126,7 @@ const Hero = () => {
 				{/* Quick Features Grid - Visual Showcase */}
 				<motion.div
 					variants={itemVariants}
-					className="grid grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 mb-8 sm:mb-10 max-w-4xl mx-auto"
+					className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-8 sm:mb-10 max-w-3xl mx-auto px-2"
 				>
 					{quickFeatures.map((feature, index) => (
 						<motion.div

@@ -131,7 +131,7 @@ const Pricing = () => {
 					</motion.div>
 
 					{/* Pricing Cards - Enhanced Visual Design */}
-					<div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 justify-items-center">
+					<div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16 justify-items-center px-2">
 						{plans.map((plan, index) => (
 							<motion.div
 								key={index}
