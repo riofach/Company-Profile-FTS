@@ -11,6 +11,8 @@ import { Analytics, PerformanceMonitor } from '@/components/Analytics';
 import Index from './pages/Index';
 import Projects from './pages/Projects';
 import AllProjects from './pages/AllProjects';
+import BlogList from './pages/BlogList';
+import BlogDetail from './pages/BlogDetail';
 import LoginAdmin from './pages/LoginAdmin';
 import NotFound from './pages/NotFound';
 import AdminDashboard from './pages/admin/Dashboard';
@@ -18,6 +20,8 @@ import ProjectForm from './pages/admin/ProjectForm';
 import ActivityLogs from './pages/admin/ActivityLogs';
 import UserManagement from './pages/admin/UserManagement';
 import ProjectManagement from './pages/admin/ProjectManagement';
+import AdminBlogs from './pages/admin/AdminBlogs';
+import BlogForm from './pages/admin/BlogForm';
 import AdminLayout from './components/admin/AdminLayout';
 
 const queryClient = new QueryClient();
@@ -85,6 +89,35 @@ const App = () => (
 											type="website"
 										/>
 										<Projects />
+									</>
+								}
+							/>
+							{/* Blog Routes */}
+							<Route
+								path="/blogs"
+								element={
+									<>
+										<SEO
+											title="Our Blog - Technology Insights"
+											description="Read the latest insights, trends, and expertise from our team of technology professionals. Web development, mobile apps, cloud solutions, and cybersecurity articles."
+											keywords="FTS Blog, Technology Blog, Web Development Blog, Mobile Apps Blog, Cloud Solutions Blog, Cybersecurity Blog, IT Insights Indonesia"
+											type="website"
+										/>
+										<BlogList />
+									</>
+								}
+							/>
+							<Route
+								path="/blogs/details/:slug"
+								element={
+									<>
+										<SEO
+											title="Blog Post"
+											description="Read our latest technology insights and expertise from our professional team."
+											keywords="FTS Blog Post, Technology Article, IT Insights"
+											type="article"
+										/>
+										<BlogDetail />
 									</>
 								}
 							/>
@@ -212,6 +245,54 @@ const App = () => (
 										/>
 										<AdminLayout>
 											<ActivityLogs />
+										</AdminLayout>
+									</>
+								}
+							/>
+							<Route
+								path="/admin/blogs"
+								element={
+									<>
+										<SEO
+											title="Blog Management"
+											description="Manage blog posts and content for FTS website."
+											keywords="FTS Blog Management, Content Management, Blog Posts"
+											type="website"
+										/>
+										<AdminLayout>
+											<AdminBlogs />
+										</AdminLayout>
+									</>
+								}
+							/>
+							<Route
+								path="/admin/blogs/new"
+								element={
+									<>
+										<SEO
+											title="Create New Blog"
+											description="Create a new blog post for FTS website."
+											keywords="FTS Create Blog, New Blog Post, Content Creation"
+											type="website"
+										/>
+										<AdminLayout>
+											<BlogForm />
+										</AdminLayout>
+									</>
+								}
+							/>
+							<Route
+								path="/admin/blogs/edit/:id"
+								element={
+									<>
+										<SEO
+											title="Edit Blog Post"
+											description="Edit existing blog post for FTS website."
+											keywords="FTS Edit Blog, Update Blog Post, Content Editing"
+											type="website"
+										/>
+										<AdminLayout>
+											<BlogForm />
 										</AdminLayout>
 									</>
 								}
