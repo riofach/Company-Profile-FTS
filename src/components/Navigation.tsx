@@ -58,6 +58,7 @@ const Navigation = () => {
 		{ name: 'Services', href: '#services' },
 		{ name: 'Pricing', href: '#pricing' },
 		{ name: 'Company', href: '#company' },
+		{ name: 'Blog', href: '/blogs' },
 		{ name: 'Contact', href: '#contact' },
 	];
 
@@ -74,21 +75,37 @@ const Navigation = () => {
 		// Close mobile menu first
 		setIsMobileMenuOpen(false);
 
-		// Delay scroll slightly to allow menu to close smoothly
-		setTimeout(() => {
-			const element = document.querySelector(href);
-			if (element) {
-				// Get navbar height for offset
-				const navbarHeight = 64; // h-16 = 64px
-				const elementPosition = element.getBoundingClientRect().top;
-				const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+		// Check if it's a route (starts with /) or a section (starts with #)
+		if (href.startsWith('/')) {
+			// Navigate to route
+			window.location.href = href;
+			return;
+		}
 
-				window.scrollTo({
-					top: offsetPosition,
-					behavior: 'smooth',
-				});
+		// For section links (#), check if we're on the home page
+		if (href.startsWith('#')) {
+			// If we're not on the home page, redirect to home first
+			if (window.location.pathname !== '/') {
+				window.location.href = `/${href}`;
+				return;
 			}
-		}, 150);
+
+			// Delay scroll slightly to allow menu to close smoothly
+			setTimeout(() => {
+				const element = document.querySelector(href);
+				if (element) {
+					// Get navbar height for offset
+					const navbarHeight = 64; // h-16 = 64px
+					const elementPosition = element.getBoundingClientRect().top;
+					const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+					window.scrollTo({
+						top: offsetPosition,
+						behavior: 'smooth',
+					});
+				}
+			}, 150);
+		}
 	};
 
 	return (

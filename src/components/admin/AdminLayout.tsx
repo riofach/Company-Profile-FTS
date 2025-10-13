@@ -18,6 +18,7 @@ import {
 	Monitor,
 	Clock,
 	User as UserIcon,
+	FileText,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { COMPANY_NAME, LOGO_SRC } from '@/lib/brand';
@@ -103,6 +104,12 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 				label: 'Projects',
 				icon: <FolderOpen className="w-4 h-4" />,
 				path: '/admin/projects',
+			},
+			{
+				id: 'blogs',
+				label: 'Blogs',
+				icon: <FileText className="w-4 h-4" />,
+				path: '/admin/blogs',
 			},
 		];
 
