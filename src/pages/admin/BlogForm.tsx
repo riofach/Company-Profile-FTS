@@ -1,7 +1,10 @@
+// Admin Blog Form - Create/Edit blog posts dengan real API integration
+// Menggunakan blogAdminService, categoryService, dan uploadApi untuk handle blog data
+
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,32 +22,28 @@ import {
 	X,
 	Plus,
 	Tag,
-	User,
-	Calendar,
-	Clock,
-	Eye,
 	FileText,
 	Upload,
-	Image as ImageIcon,
+	Eye,
 } from 'lucide-react';
-import { BlogPost, mockBlogs, getBlogBySlug } from '@/data/mockBlogs';
+import { blogAdminService, categoryService, tagService, BlogResponse } from '@/services/blogService';
+import { uploadApi } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 
-// Interface untuk BlogForm props
-interface BlogFormProps {
-	blog?: BlogPost | null;
-	onSave?: (blog: BlogPost) => void;
-	onCancel?: () => void;
+// Interface untuk Category
+interface Category {
+	id: string;
+	name: string;
 }
 
 // Component BlogForm untuk create/edit blog posts
-const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
+const BlogForm = () => {
 	const { toast } = useToast();
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	// State untuk form data
 	const [formData, setFormData] = useState({
@@ -52,57 +51,84 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 		slug: '',
 		excerpt: '',
 		content: '',
-		category: '',
+		categoryId: '',
 		tags: [] as string[],
 		featuredImage: '',
 		isPublished: false,
-		author: {
-			name: 'FTS Admin',
-			role: 'Administrator',
-			avatar: './images/admin.webp',
-		},
 	});
 
-	// State untuk new tag input
+	// State untuk UI
 	const [newTag, setNewTag] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingData, setIsLoadingData] = useState(false);
 	const [uploadedImage, setUploadedImage] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string>('');
-	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [categories, setCategories] = useState<Category[]>([]);
+
+	// Load categories dari API
+	useEffect(() => {
+		const loadCategories = async () => {
+			try {
+				const categoriesData = await categoryService.getAll();
+				setCategories(categoriesData);
+			} catch (error) {
+				console.error('Failed to load categories:', error);
+				toast({
+					title: 'Error',
+					description: 'Failed to load categories',
+					variant: 'destructive',
+				});
+			}
+		};
+		loadCategories();
+	}, []);
 
 	// Load blog data jika edit mode
 	useEffect(() => {
 		if (id) {
-			// Edit mode - load blog by ID
-			const existingBlog = mockBlogs.find((b) => b.id === id);
-			if (existingBlog) {
-				setFormData({
-					title: existingBlog.title,
-					slug: existingBlog.slug,
-					excerpt: existingBlog.excerpt,
-					content: existingBlog.content,
-					category: existingBlog.category,
-					tags: existingBlog.tags,
-					featuredImage: existingBlog.featuredImage,
-					isPublished: existingBlog.isPublished,
-					author: existingBlog.author,
-				});
-			}
-		} else if (blog) {
-			// Props mode
-			setFormData({
-				title: blog.title,
-				slug: blog.slug,
-				excerpt: blog.excerpt,
-				content: blog.content,
-				category: blog.category,
-				tags: blog.tags,
-				featuredImage: blog.featuredImage,
-				isPublished: blog.isPublished,
-				author: blog.author,
-			});
+			loadBlogData(id);
 		}
-	}, [id, blog]);
+	}, [id]);
+
+	// Function untuk load blog data (edit mode)
+	const loadBlogData = async (blogId: string) => {
+		setIsLoadingData(true);
+
+		try {
+			const blogData: BlogResponse = await blogAdminService.getAllAdmin({ limit: 1 }).then((res) => {
+				const blog = res.blogs.find((b) => b.id === blogId);
+				if (!blog) throw new Error('Blog not found');
+				return blog;
+			});
+
+			// Populate form dengan data blog
+			setFormData({
+				title: blogData.title,
+				slug: blogData.slug,
+				excerpt: blogData.excerpt,
+				content: blogData.content,
+				categoryId: blogData.category.id,
+				tags: blogData.tags.map((t) => t.name),
+				featuredImage: blogData.featuredImage || '',
+				isPublished: blogData.isPublished,
+			});
+
+			// Set image preview jika ada featured image
+			if (blogData.featuredImage) {
+				setImagePreview(blogData.featuredImage);
+			}
+		} catch (error) {
+			console.error('Failed to load blog:', error);
+			toast({
+				title: 'Error',
+				description: error instanceof Error ? error.message : 'Failed to load blog data',
+				variant: 'destructive',
+			});
+			navigate('/admin/blogs');
+		} finally {
+			setIsLoadingData(false);
+		}
+	};
 
 	// Generate slug from title
 	const generateSlug = (title: string) => {
@@ -114,23 +140,60 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 			.trim();
 	};
 
-	// Handle title change and auto-generate slug
+	// Handle title change and auto-generate slug (only for new blog)
 	const handleTitleChange = (value: string) => {
 		setFormData((prev) => ({
 			...prev,
 			title: value,
-			slug: generateSlug(value),
+			// Only auto-generate slug jika bukan edit mode
+			slug: !id ? generateSlug(value) : prev.slug,
 		}));
 	};
 
 	// Handle add tag
-	const handleAddTag = () => {
-		if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-			setFormData((prev) => ({
-				...prev,
-				tags: [...prev.tags, newTag.trim()],
-			}));
-			setNewTag('');
+	const handleAddTag = async () => {
+		const trimmedTag = newTag.trim();
+
+		if (!trimmedTag) {
+			toast({
+				title: 'Invalid Tag',
+				description: 'Please enter a tag name',
+				variant: 'destructive',
+			});
+			return;
+		}
+
+		if (formData.tags.includes(trimmedTag)) {
+			toast({
+				title: 'Duplicate Tag',
+				description: 'This tag already exists',
+				variant: 'destructive',
+			});
+			return;
+		}
+
+		if (formData.tags.length >= 10) {
+			toast({
+				title: 'Tag Limit Reached',
+				description: 'Maximum 10 tags allowed',
+				variant: 'destructive',
+			});
+			return;
+		}
+
+		// Add tag to form data
+		setFormData((prev) => ({
+			...prev,
+			tags: [...prev.tags, trimmedTag],
+		}));
+		setNewTag('');
+
+		// Create tag di backend (jika belum ada, backend akan handle)
+		try {
+			await tagService.create(trimmedTag);
+		} catch (error) {
+			// Ignore error, tag mungkin sudah ada
+			console.log('Tag creation note:', error);
 		}
 	};
 
@@ -143,7 +206,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 	};
 
 	// Handle file upload
-	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
 		if (!file) return;
 
@@ -157,7 +220,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 			return;
 		}
 
-		// Validate file type (images only)
+		// Validate file type
 		if (!file.type.startsWith('image/')) {
 			toast({
 				title: 'Invalid file type',
@@ -172,71 +235,134 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 		// Create preview URL
 		const previewUrl = URL.createObjectURL(file);
 		setImagePreview(previewUrl);
-
-		// Simulate Cloudinary upload (in real app, upload to Cloudinary)
-		toast({
-			title: 'Image uploaded',
-			description: 'Image will be uploaded to Cloudinary when you save the blog.',
-		});
 	};
 
 	// Handle remove uploaded image
 	const handleRemoveImage = () => {
 		setUploadedImage(null);
 		setImagePreview('');
+		setFormData((prev) => ({ ...prev, featuredImage: '' }));
 		if (fileInputRef.current) {
 			fileInputRef.current.value = '';
 		}
 	};
 
-	// ReactQuill configuration
-	const quillModules = {
-		toolbar: [
-			[{ header: [1, 2, 3, 4, 5, 6, false] }],
-			['bold', 'italic', 'underline', 'strike'],
-			[{ color: [] }, { background: [] }],
-			[{ list: 'ordered' }, { list: 'bullet' }],
-			[{ indent: '-1' }, { indent: '+1' }],
-			[{ align: [] }],
-			['link', 'image'],
-			['clean'],
-		],
+	// Validate form data
+	const validateForm = (): boolean => {
+		// Title validation
+		if (formData.title.length < 10 || formData.title.length > 200) {
+			toast({
+				title: 'Invalid Title',
+				description: 'Title must be between 10 and 200 characters',
+				variant: 'destructive',
+			});
+			return false;
+		}
+
+		// Slug validation
+		if (formData.slug.length < 5 || formData.slug.length > 250) {
+			toast({
+				title: 'Invalid Slug',
+				description: 'Slug must be between 5 and 250 characters',
+				variant: 'destructive',
+			});
+			return false;
+		}
+
+		// Excerpt validation
+		if (formData.excerpt.length < 50 || formData.excerpt.length > 500) {
+			toast({
+				title: 'Invalid Excerpt',
+				description: 'Excerpt must be between 50 and 500 characters',
+				variant: 'destructive',
+			});
+			return false;
+		}
+
+		// Content validation
+		const textContent = formData.content.replace(/<[^>]*>/g, '');
+		if (textContent.length < 100) {
+			toast({
+				title: 'Invalid Content',
+				description: 'Content must be at least 100 characters',
+				variant: 'destructive',
+			});
+			return false;
+		}
+
+		// Category validation
+		if (!formData.categoryId) {
+			toast({
+				title: 'Category Required',
+				description: 'Please select a category',
+				variant: 'destructive',
+			});
+			return false;
+		}
+
+		return true;
 	};
 
 	// Handle form submission
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// Validate form
+		if (!validateForm()) {
+			return;
+		}
+
 		setIsLoading(true);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			let imageUrl = formData.featuredImage;
 
-			const blogData: BlogPost = {
-				id: blog?.id || Date.now().toString(),
-				title: formData.title,
-				slug: formData.slug,
-				excerpt: formData.excerpt,
-				content: formData.content,
-				category: formData.category,
-				tags: formData.tags,
-				featuredImage: uploadedImage ? URL.createObjectURL(uploadedImage) : formData.featuredImage,
-				isPublished: formData.isPublished,
-				readTime: Math.ceil(formData.content.replace(/<[^>]*>/g, '').split(' ').length / 200), // Auto-calculate read time
-				author: formData.author,
-				publishedAt: blog?.publishedAt || new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
-				views: blog?.views || 0,
-			};
-
-			if (onSave) {
-				onSave(blogData);
+			// Upload image jika ada file yang di-upload
+			if (uploadedImage) {
+				try {
+					const uploadResponse = await uploadApi.uploadSingle(uploadedImage);
+					if (uploadResponse.success && uploadResponse.data) {
+						imageUrl = uploadResponse.data.url;
+					}
+				} catch (uploadError) {
+					console.error('Image upload failed:', uploadError);
+					toast({
+						title: 'Upload Failed',
+						description: 'Failed to upload image. Blog will be saved without image.',
+						variant: 'destructive',
+					});
+				}
 			}
 
-			toast({
-				title: blog ? 'Blog Updated' : 'Blog Created',
-				description: `Blog post has been ${blog ? 'updated' : 'created'} successfully.`,
-			});
+			// Prepare blog data untuk API
+			// Note: Set publishedAt to current date/time saat create (backend may override if needed)
+			const blogData = {
+				title: formData.title,
+				excerpt: formData.excerpt,
+				content: formData.content,
+				categoryId: formData.categoryId,
+				tags: formData.tags,
+				featuredImage: imageUrl,
+				isPublished: formData.isPublished,
+				...(formData.isPublished && !id && { publishedAt: new Date().toISOString() }), // Set publish date hanya untuk new blog yang di-publish
+			};
+
+			// Create or update blog
+			if (id) {
+				// Update existing blog
+				await blogAdminService.update(id, blogData);
+				toast({
+					title: 'Blog Updated',
+					description: 'Blog post has been updated successfully.',
+				});
+			} else {
+				// Create new blog
+				await blogAdminService.create(blogData);
+				toast({
+					title: 'Blog Created',
+					description: 'Blog post has been created successfully.',
+				});
+			}
 
 			// Navigate back to blogs list
 			navigate('/admin/blogs');
@@ -244,7 +370,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 			console.error('Error saving blog:', error);
 			toast({
 				title: 'Error',
-				description: 'Failed to save blog post. Please try again.',
+				description: error instanceof Error ? error.message : 'Failed to save blog post',
 				variant: 'destructive',
 			});
 		} finally {
@@ -254,11 +380,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 
 	// Handle cancel
 	const handleCancel = () => {
-		if (onCancel) {
-			onCancel();
-		} else {
-			navigate('/admin/blogs');
-		}
+		navigate('/admin/blogs');
 	};
 
 	// Animation variants
@@ -282,6 +404,18 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 		},
 	};
 
+	// Loading state untuk edit mode
+	if (isLoadingData) {
+		return (
+			<div className="container mx-auto px-4 py-8">
+				<div className="text-center py-12">
+					<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+					<p className="text-muted-foreground">Loading blog data...</p>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="container mx-auto px-4 py-8">
 			{/* Header */}
@@ -292,10 +426,10 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 				className="mb-8"
 			>
 				<h1 className="text-4xl font-bold mb-2">
-					{blog ? 'Edit Blog Post' : 'Create New Blog Post'}
+					{id ? 'Edit Blog Post' : 'Create New Blog Post'}
 				</h1>
 				<p className="text-muted-foreground">
-					{blog
+					{id
 						? 'Update your blog post content and settings'
 						: 'Create a new blog post for your website'}
 				</p>
@@ -312,6 +446,13 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 								Basic Information
 							</h3>
 
+							{/* Helper text untuk mengingatkan requirements minimum 100 character untuk excerpt dan content */}
+							<div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3 mb-2">
+								<p className="text-sm text-blue-800 dark:text-blue-100">
+									<span className="font-semibold">📋 Requirements:</span> Excerpt dan Content masing-masing minimum <span className="font-bold">100 characters</span> untuk hasil SEO yang optimal.
+								</p>
+							</div>
+
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div className="space-y-2">
 									<Label htmlFor="title">Title *</Label>
@@ -319,9 +460,14 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 										id="title"
 										value={formData.title}
 										onChange={(e) => handleTitleChange(e.target.value)}
-										placeholder="Enter blog title"
+										placeholder="Enter blog title (10-200 characters)"
 										required
+										minLength={10}
+										maxLength={200}
 									/>
+									<p className="text-xs text-muted-foreground">
+										{formData.title.length}/200 characters
+									</p>
 								</div>
 
 								<div className="space-y-2">
@@ -332,41 +478,89 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 										onChange={(e) => setFormData((prev) => ({ ...prev, slug: e.target.value }))}
 										placeholder="blog-post-slug"
 										required
+										minLength={5}
+										maxLength={250}
 									/>
+									<p className="text-xs text-muted-foreground">
+										URL-friendly version of the title
+									</p>
 								</div>
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="excerpt">Excerpt *</Label>
+								<Label htmlFor="excerpt">Excerpt * (Minimum 100 characters required)</Label>
 								<Textarea
 									id="excerpt"
 									value={formData.excerpt}
 									onChange={(e) => setFormData((prev) => ({ ...prev, excerpt: e.target.value }))}
-									placeholder="Brief description of the blog post (150-300 characters recommended for SEO)"
+									placeholder="Brief description of the blog post (minimum 100 characters for better SEO)"
 									rows={3}
 									required
+									minLength={100}
+									maxLength={500}
+									className={formData.excerpt.length < 100 && formData.excerpt.length > 0 ? 'border-yellow-500 focus:ring-yellow-500' : ''}
 								/>
-								<p className="text-sm text-muted-foreground">
-									Excerpt is a short summary that appears in blog previews and search results. Keep
-									it concise and engaging to attract readers.
-								</p>
+								{/* Character counter with visual feedback: show current vs minimum requirement */}
+								<div className="flex justify-between items-center">
+									<p className={`text-xs ${formData.excerpt.length < 100 && formData.excerpt.length > 0 ? 'text-yellow-600 font-medium' : 'text-muted-foreground'}`}>
+										{formData.excerpt.length}/500 characters
+										{formData.excerpt.length < 100 && formData.excerpt.length > 0 && (
+											<span className="ml-2 text-yellow-600 font-semibold">
+												({100 - formData.excerpt.length} more needed)
+											</span>
+										)}
+									</p>
+									{/* Status badge untuk clear visual indication */}
+									{formData.excerpt.length >= 100 && (
+										<span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-2 py-1 rounded">
+											✓ Valid
+										</span>
+									)}
+									{formData.excerpt.length > 0 && formData.excerpt.length < 100 && (
+										<span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-2 py-1 rounded">
+											⚠ Too short
+										</span>
+									)}
+								</div>
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="content">Content *</Label>
-								<div className="border rounded-lg">
-									<ReactQuill
-										theme="snow"
-										value={formData.content}
-										onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
-										modules={quillModules}
-										placeholder="Write your blog content here..."
-										style={{ minHeight: '200px' }}
-									/>
+								<Label htmlFor="content">Content * (Minimum 100 characters required)</Label>
+								<RichTextEditor
+									value={formData.content}
+									onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
+									placeholder="Write your blog content here... (minimum 100 characters)"
+									minHeight="300px"
+								/>
+								{/* Character counter untuk Content field dengan visual feedback (HTML tags tidak dihitung) */}
+								<div className="flex justify-between items-center flex-wrap gap-2">
+									{/* Show character count excluding HTML tags */}
+									<p className={`text-xs ${
+										formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 
+											? 'text-yellow-600 font-medium' 
+											: 'text-muted-foreground'
+									}`}>
+										{formData.content.replace(/<[^>]*>/g, '').length} characters (HTML not counted)
+										{formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 && (
+											<span className="ml-2 text-yellow-600 font-semibold">
+												({100 - formData.content.replace(/<[^>]*>/g, '').length} more needed)
+											</span>
+										)}
+									</p>
+									{/* Status badge untuk visual indication */}
+									{formData.content.replace(/<[^>]*>/g, '').length >= 100 && (
+										<span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-2 py-1 rounded">
+											✓ Valid
+										</span>
+									)}
+									{formData.content.length > 0 && formData.content.replace(/<[^>]*>/g, '').length < 100 && (
+										<span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-2 py-1 rounded">
+											⚠ Too short
+										</span>
+									)}
 								</div>
-								<p className="text-sm text-muted-foreground">
-									Use the toolbar above to format your content with bold, italic, lists, links, and
-									more.
+								<p className="text-xs text-muted-foreground">
+									Use the toolbar above to format your content. HTML tags are not counted in character limit.
 								</p>
 							</div>
 						</motion.div>
@@ -381,24 +575,25 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 							<div className="space-y-2">
 								<Label htmlFor="category">Category *</Label>
 								<Select
-									value={formData.category}
-									onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+									value={formData.categoryId}
+									onValueChange={(value) => setFormData((prev) => ({ ...prev, categoryId: value }))}
+									required
 								>
 									<SelectTrigger>
 										<SelectValue placeholder="Select category" />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="Technology">Technology</SelectItem>
-										<SelectItem value="Security">Security</SelectItem>
-										<SelectItem value="Mobile Development">Mobile Development</SelectItem>
-										<SelectItem value="Cloud Solutions">Cloud Solutions</SelectItem>
-										<SelectItem value="Digital Transformation">Digital Transformation</SelectItem>
+										{categories.map((category) => (
+											<SelectItem key={category.id} value={category.id}>
+												{category.name}
+											</SelectItem>
+										))}
 									</SelectContent>
 								</Select>
 							</div>
 
 							<div className="space-y-2">
-								<Label>Tags</Label>
+								<Label>Tags (Max 10)</Label>
 								<div className="flex flex-wrap gap-2 mb-2">
 									{formData.tags.map((tag, index) => (
 										<Badge key={index} variant="secondary" className="flex items-center gap-1">
@@ -419,11 +614,15 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 										onChange={(e) => setNewTag(e.target.value)}
 										placeholder="Add new tag"
 										onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+										maxLength={50}
 									/>
 									<Button type="button" onClick={handleAddTag} size="sm">
 										<Plus className="w-4 h-4" />
 									</Button>
 								</div>
+								<p className="text-xs text-muted-foreground">
+									{formData.tags.length}/10 tags - Press Enter or click + to add
+								</p>
 							</div>
 						</motion.div>
 
@@ -456,7 +655,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 											<Upload className="w-4 h-4" />
 											Upload Image
 										</Button>
-										{uploadedImage && (
+										{imagePreview && (
 											<Button
 												type="button"
 												variant="outline"
@@ -485,6 +684,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 										<Label htmlFor="featuredImageUrl">Or use image URL</Label>
 										<Input
 											id="featuredImageUrl"
+											type="url"
 											value={formData.featuredImage}
 											onChange={(e) =>
 												setFormData((prev) => ({ ...prev, featuredImage: e.target.value }))
@@ -493,9 +693,8 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 										/>
 									</div>
 
-									<p className="text-sm text-muted-foreground">
-										Upload an image (max 5MB) or provide an image URL. Supported formats: JPG, PNG,
-										GIF, WebP, SVG.
+									<p className="text-xs text-muted-foreground">
+										Upload an image (max 5MB) or provide an image URL
 									</p>
 								</div>
 							</div>
@@ -514,7 +713,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 
 						{/* Action Buttons */}
 						<motion.div variants={itemVariants} className="flex justify-end gap-4 pt-6 border-t">
-							<Button type="button" variant="outline" onClick={handleCancel}>
+							<Button type="button" variant="outline" onClick={handleCancel} disabled={isLoading}>
 								<X className="w-4 h-4 mr-2" />
 								Cancel
 							</Button>
@@ -527,7 +726,7 @@ const BlogForm = ({ blog, onSave, onCancel }: BlogFormProps) => {
 								) : (
 									<>
 										<Save className="w-4 h-4 mr-2" />
-										{blog ? 'Update Blog' : 'Create Blog'}
+										{id ? 'Update Blog' : 'Create Blog'}
 									</>
 								)}
 							</Button>

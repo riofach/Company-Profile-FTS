@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { BlogPost } from '@/data/mockBlogs';
-import { format } from 'date-fns';
+import { formatBlogDateString } from '@/utils/dateFormatter';
 
 // Interface untuk BlogCard props
 interface BlogCardProps {
@@ -14,8 +14,8 @@ interface BlogCardProps {
 
 // Component BlogCard untuk menampilkan preview blog
 const BlogCard = ({ blog, onReadMore }: BlogCardProps) => {
-	// Format tanggal untuk display
-	const formattedDate = format(new Date(blog.publishedAt), 'MMM dd, yyyy');
+	// Format tanggal menggunakan utility function - handle draft blogs dan invalid dates
+	const formattedDate = formatBlogDateString(blog);
 
 	// Animation variants untuk card
 	const cardVariants = {

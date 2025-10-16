@@ -1,7 +1,10 @@
+// Admin BlogS Management - CRUD operations untuk blog posts dengan real API integration
+// Menggunakan blogAdminService untuk fetch dan manage blog data dari backend
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
@@ -14,29 +17,46 @@ import {
 import {
 	Plus,
 	Search,
-	Filter,
 	Edit,
 	Trash2,
 	Eye,
-	Calendar,
-	User,
-	Tag,
-	MoreHorizontal,
+	Clock,
 	FileText,
 	TrendingUp,
-	Clock,
 } from 'lucide-react';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { BlogPost, mockBlogs, getPublishedBlogs } from '@/data/mockBlogs';
+import { blogAdminService, blogService, categoryService, BlogResponse } from '@/services/blogService';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { formatBlogDate } from '@/utils/dateFormatter';
 import { Link, useNavigate } from 'react-router-dom';
-import DeleteConfirmationModal from '@/components/ui/DeleteConfirmationModal';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+// Interface untuk BlogPost yang compatible dengan UI
+interface BlogPost {
+	id: string;
+	title: string;
+	slug: string;
+	excerpt: string;
+	author: {
+		name: string;
+	};
+	featuredImage?: string;
+	category: string;
+	tags: string[];
+	publishedAt: string;
+	readTime: number;
+	isPublished: boolean;
+	views: number;
+}
 
 // Component AdminBlogs untuk mengelola blog posts
 const AdminBlogs = () => {
@@ -46,33 +66,99 @@ const AdminBlogs = () => {
 	// State untuk blogs management
 	const [blogs, setBlogs] = useState<BlogPost[]>([]);
 	const [filteredBlogs, setFilteredBlogs] = useState<BlogPost[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	// State untuk search dan filter
 	const [searchTerm, setSearchTerm] = useState('');
 	const [statusFilter, setStatusFilter] = useState('all');
 	const [categoryFilter, setCategoryFilter] = useState('all');
-	const [isLoading, setIsLoading] = useState(true);
-	const [isDeleting, setIsDeleting] = useState<string | null>(null);
+	const [categories, setCategories] = useState<string[]>(['all']);
 
-	// State untuk delete confirmation modal
+	// State untuk delete confirmation
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const [blogToDelete, setBlogToDelete] = useState<BlogPost | null>(null);
 	const [isDeletingBlog, setIsDeletingBlog] = useState(false);
 
-	// Load blogs data
+	// State untuk stats
+	const [stats, setStats] = useState({
+		totalBlogs: 0,
+		publishedBlogs: 0,
+		draftBlogs: 0,
+		totalViews: 0,
+	});
+
+	// Load categories dari API
+	useEffect(() => {
+		const loadCategories = async () => {
+			try {
+				const categoriesData = await categoryService.getAll();
+				const categoryNames = categoriesData.map((cat) => cat.name);
+				setCategories(['all', ...categoryNames]);
+			} catch (error) {
+				console.error('Failed to load categories:', error);
+			}
+		};
+		loadCategories();
+	}, []);
+
+	// Load blogs dari API
 	useEffect(() => {
 		loadBlogs();
 	}, []);
 
-	// Load blogs from mock data
-	const loadBlogs = () => {
+	// Function untuk load blogs dari API
+	const loadBlogs = async () => {
 		setIsLoading(true);
+		setError(null);
+
 		try {
-			// Simulate API call
-			setTimeout(() => {
-				setBlogs(mockBlogs);
-				setIsLoading(false);
-			}, 500);
+			// Fetch all blogs termasuk draft (admin only)
+			const response = await blogAdminService.getAllAdmin({
+				limit: 100, // Load all blogs untuk admin
+			});
+
+			// Convert API response to BlogPost format
+			const convertedBlogs: BlogPost[] = response.blogs.map((blog: BlogResponse) => ({
+				id: blog.id,
+				title: blog.title,
+				slug: blog.slug,
+				excerpt: blog.excerpt,
+				author: {
+					name: blog.author.name,
+				},
+				featuredImage: blog.featuredImage,
+				category: blog.category.name,
+				tags: blog.tags.map((tag) => tag.name),
+				publishedAt: blog.publishedAt,
+				readTime: blog.readTime,
+				isPublished: blog.isPublished,
+				views: blog.views,
+			}));
+
+			setBlogs(convertedBlogs);
+
+			// Calculate stats
+			const totalBlogs = convertedBlogs.length;
+			const publishedBlogs = convertedBlogs.filter((blog) => blog.isPublished).length;
+			const draftBlogs = totalBlogs - publishedBlogs;
+			const totalViews = convertedBlogs.reduce((sum, blog) => sum + blog.views, 0);
+
+			setStats({
+				totalBlogs,
+				publishedBlogs,
+				draftBlogs,
+				totalViews,
+			});
 		} catch (error) {
-			console.error('Error loading blogs:', error);
+			console.error('Failed to load blogs:', error);
+			setError(error instanceof Error ? error.message : 'Failed to load blogs');
+			toast({
+				title: 'Error',
+				description: 'Failed to load blog posts. Please try again.',
+				variant: 'destructive',
+			});
+		} finally {
 			setIsLoading(false);
 		}
 	};
@@ -108,9 +194,6 @@ const AdminBlogs = () => {
 		setFilteredBlogs(filtered);
 	}, [blogs, searchTerm, statusFilter, categoryFilter]);
 
-	// Get unique categories
-	const categories = ['all', ...Array.from(new Set(blogs.map((blog) => blog.category)))];
-
 	// Handle delete blog click
 	const handleDeleteBlogClick = (blog: BlogPost) => {
 		setBlogToDelete(blog);
@@ -128,29 +211,29 @@ const AdminBlogs = () => {
 		if (!blogToDelete) return;
 
 		setIsDeletingBlog(true);
-		setIsDeleting(blogToDelete.id);
 
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			// Delete blog via API
+			await blogAdminService.delete(blogToDelete.id);
 
 			// Remove blog dari state
 			setBlogs((prev) => prev.filter((blog) => blog.id !== blogToDelete.id));
+
 			toast({
 				title: 'Success',
 				description: 'Blog post deleted successfully',
 			});
+
 			handleCloseDeleteModal();
 		} catch (error) {
 			console.error('Failed to delete blog:', error);
 			toast({
 				title: 'Error',
-				description: 'An unexpected error occurred',
+				description: error instanceof Error ? error.message : 'Failed to delete blog',
 				variant: 'destructive',
 			});
 		} finally {
 			setIsDeletingBlog(false);
-			setIsDeleting(null);
 		}
 	};
 
@@ -165,18 +248,33 @@ const AdminBlogs = () => {
 	};
 
 	// Handle toggle publish status
-	const handleTogglePublish = (blogId: string) => {
-		setBlogs((prev) =>
-			prev.map((blog) => (blog.id === blogId ? { ...blog, isPublished: !blog.isPublished } : blog))
-		);
-
+	const handleTogglePublish = async (blogId: string) => {
 		const blog = blogs.find((b) => b.id === blogId);
-		toast({
-			title: blog?.isPublished ? 'Blog Unpublished' : 'Blog Published',
-			description: `Blog post has been ${
-				blog?.isPublished ? 'unpublished' : 'published'
-			} successfully.`,
-		});
+		if (!blog) return;
+
+		try {
+			// Toggle publish status via API
+			await blogAdminService.publish(blogId, !blog.isPublished);
+
+			// Update local state
+			setBlogs((prev) =>
+				prev.map((b) => (b.id === blogId ? { ...b, isPublished: !b.isPublished } : b))
+			);
+
+			toast({
+				title: blog.isPublished ? 'Blog Unpublished' : 'Blog Published',
+				description: `Blog post has been ${
+					blog.isPublished ? 'unpublished' : 'published'
+				} successfully.`,
+			});
+		} catch (error) {
+			console.error('Failed to toggle publish status:', error);
+			toast({
+				title: 'Error',
+				description: error instanceof Error ? error.message : 'Failed to update blog status',
+				variant: 'destructive',
+			});
+		}
 	};
 
 	// Get status badge variant
@@ -228,7 +326,7 @@ const AdminBlogs = () => {
 						<div>
 							<h2 className="text-2xl font-bold mb-2">All Blog Posts</h2>
 							<p className="text-muted-foreground">
-								{blogs.length} {blogs.length === 1 ? 'blog post' : 'blog posts'} in total
+								{stats.totalBlogs} {stats.totalBlogs === 1 ? 'blog post' : 'blog posts'} in total
 							</p>
 						</div>
 						<Button
@@ -254,7 +352,7 @@ const AdminBlogs = () => {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm font-medium text-muted-foreground">Total Blogs</p>
-										<p className="text-2xl font-bold">{blogs.length}</p>
+										<p className="text-2xl font-bold">{stats.totalBlogs}</p>
 									</div>
 									<FileText className="h-8 w-8 text-primary" />
 								</div>
@@ -266,9 +364,7 @@ const AdminBlogs = () => {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm font-medium text-muted-foreground">Published</p>
-										<p className="text-2xl font-bold">
-											{blogs.filter((blog) => blog.isPublished).length}
-										</p>
+										<p className="text-2xl font-bold">{stats.publishedBlogs}</p>
 									</div>
 									<TrendingUp className="h-8 w-8 text-green-500" />
 								</div>
@@ -280,9 +376,7 @@ const AdminBlogs = () => {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm font-medium text-muted-foreground">Drafts</p>
-										<p className="text-2xl font-bold">
-											{blogs.filter((blog) => !blog.isPublished).length}
-										</p>
+										<p className="text-2xl font-bold">{stats.draftBlogs}</p>
 									</div>
 									<Clock className="h-8 w-8 text-yellow-500" />
 								</div>
@@ -294,9 +388,7 @@ const AdminBlogs = () => {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm font-medium text-muted-foreground">Total Views</p>
-										<p className="text-2xl font-bold">
-											{blogs.reduce((sum, blog) => sum + blog.views, 0).toLocaleString()}
-										</p>
+										<p className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</p>
 									</div>
 									<Eye className="h-8 w-8 text-blue-500" />
 								</div>
@@ -308,12 +400,12 @@ const AdminBlogs = () => {
 					<div className="mb-6">
 						<div className="relative">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-							<input
+							<Input
 								type="text"
 								placeholder="Search blogs by title, excerpt, or author..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+								className="pl-10"
 							/>
 						</div>
 					</div>
@@ -335,10 +427,9 @@ const AdminBlogs = () => {
 								<SelectValue placeholder="All Categories" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All Categories</SelectItem>
-								{categories.slice(1).map((category) => (
+								{categories.map((category) => (
 									<SelectItem key={category} value={category}>
-										{category}
+										{category === 'all' ? 'All Categories' : category}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -352,6 +443,13 @@ const AdminBlogs = () => {
 								<div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
 								<p className="text-muted-foreground">Loading blogs...</p>
 							</div>
+						) : error ? (
+							<div className="text-center py-12">
+								<p className="text-red-500 mb-4">{error}</p>
+								<Button variant="outline" onClick={loadBlogs}>
+									Retry
+								</Button>
+							</div>
 						) : filteredBlogs.length === 0 ? (
 							<div className="text-center py-12">
 								<p className="text-muted-foreground mb-4">
@@ -359,7 +457,7 @@ const AdminBlogs = () => {
 										? 'No blogs found matching your search.'
 										: 'No blogs yet.'}
 								</p>
-								{!searchTerm && (
+								{!searchTerm && statusFilter === 'all' && categoryFilter === 'all' && (
 									<Button
 										asChild
 										className="bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary"
@@ -387,6 +485,9 @@ const AdminBlogs = () => {
 													src={blog.featuredImage || '/placeholder.svg'}
 													alt={blog.title}
 													className="w-full h-32 lg:h-full object-cover rounded-lg"
+													onError={(e) => {
+														e.currentTarget.src = '/placeholder.svg';
+													}}
 												/>
 											</div>
 
@@ -400,7 +501,8 @@ const AdminBlogs = () => {
 															</Badge>
 															<Badge variant="outline">{blog.category}</Badge>
 															<span className="text-sm text-muted-foreground">
-																{format(new Date(blog.publishedAt), 'MMM dd, yyyy')}
+																{/* Format date dengan validation untuk handle draft blogs */}
+															{formatBlogDate(blog)}
 															</span>
 														</div>
 
@@ -410,18 +512,19 @@ const AdminBlogs = () => {
 														</p>
 
 														<div className="flex flex-wrap gap-2 mb-3">
-															{blog.tags.map((tag, index) => (
+															{blog.tags.slice(0, 3).map((tag, index) => (
 																<Badge key={index} variant="secondary" className="text-xs">
 																	{tag}
 																</Badge>
 															))}
+															{blog.tags.length > 3 && (
+																<Badge variant="secondary" className="text-xs">
+																	+{blog.tags.length - 3} more
+																</Badge>
+															)}
 														</div>
 
 														<div className="flex items-center gap-6 text-sm text-muted-foreground">
-															<div className="flex items-center gap-1">
-																<User className="w-4 h-4" />
-																<span>{blog.author.name}</span>
-															</div>
 															<div className="flex items-center gap-1">
 																<Clock className="w-4 h-4" />
 																<span>{blog.readTime} min read</span>
@@ -465,20 +568,10 @@ const AdminBlogs = () => {
 															variant="destructive"
 															size="sm"
 															onClick={() => handleDeleteBlogClick(blog)}
-															disabled={isDeleting === blog.id}
 															className="flex items-center space-x-2"
 														>
-															{isDeleting === blog.id ? (
-																<>
-																	<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-																	<span>Deleting...</span>
-																</>
-															) : (
-																<>
-																	<Trash2 className="w-4 h-4" />
-																	<span>Delete</span>
-																</>
-															)}
+															<Trash2 className="w-4 h-4" />
+															<span>Delete</span>
 														</Button>
 													</div>
 												</div>
@@ -492,16 +585,37 @@ const AdminBlogs = () => {
 				</Card>
 			</motion.div>
 
-			{/* Delete Confirmation Modal */}
-			<DeleteConfirmationModal
-				isOpen={deleteModalOpen}
-				onClose={handleCloseDeleteModal}
-				onConfirm={handleConfirmDeleteBlog}
-				title="Delete Blog Post"
-				description="Are you sure you want to delete this blog post? This action cannot be undone and will remove all blog data including content and associated information."
-				itemName={blogToDelete ? blogToDelete.title : ''}
-				isLoading={isDeletingBlog}
-			/>
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Delete Blog Post</AlertDialogTitle>
+						<AlertDialogDescription>
+							Are you sure you want to delete "{blogToDelete?.title}"? This action cannot be undone
+							and will remove all blog data including content and associated information.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={handleCloseDeleteModal} disabled={isDeletingBlog}>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleConfirmDeleteBlog}
+							disabled={isDeletingBlog}
+							className="bg-destructive hover:bg-destructive/90"
+						>
+							{isDeletingBlog ? (
+								<>
+									<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+									Deleting...
+								</>
+							) : (
+								'Delete'
+							)}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 };
