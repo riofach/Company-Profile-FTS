@@ -398,10 +398,16 @@ const BlogDetail = ({ blogSlug, onBack, onRelatedBlogClick }: BlogDetailProps) =
 					<Separator className="mb-8" />
 				</motion.div>
 
-				{/* Article Content */}
+				{/* Article Content - Render HTML dengan proper styling untuk lists, headings, dll */}
 				<motion.div
 					variants={itemVariants}
-					className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-ul:text-gray-700 dark:prose-ul:text-gray-300 prose-li:text-gray-700 dark:prose-li:text-gray-300"
+					className="prose prose-lg max-w-none dark:prose-invert 
+						prose-headings:text-gray-900 dark:prose-headings:text-white 
+						prose-p:text-gray-700 dark:prose-p:text-gray-300 
+						prose-strong:text-gray-900 dark:prose-strong:text-white 
+						prose-ul:text-gray-700 dark:prose-ul:text-gray-300 
+						prose-ol:text-gray-700 dark:prose-ol:text-gray-300 prose-ol:list-decimal prose-ol:pl-6
+						prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:marker:text-gray-500"
 					dangerouslySetInnerHTML={{ __html: blog.content }}
 				/>
 

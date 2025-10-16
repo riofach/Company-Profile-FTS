@@ -115,5 +115,9 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // Plugins untuk Tailwind - typography plugin needed untuk prose classes (blog content styling)
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+  ],
 } satisfies Config;
