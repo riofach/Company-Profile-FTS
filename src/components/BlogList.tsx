@@ -111,15 +111,16 @@ const BlogList = ({ onBlogClick }: BlogListProps) => {
 				const response = await blogService.getAll(params);
 
 				// Convert API response to BlogPost format
+				// NOTE: Backend optimization - content field tidak ada di list response (hanya excerpt)
 				const convertedBlogs: BlogPost[] = response.blogs.map((blog: BlogResponse) => ({
 					id: blog.id,
 					title: blog.title,
 					slug: blog.slug,
 					excerpt: blog.excerpt,
-					content: blog.content,
+					content: blog.excerpt,  // Use excerpt untuk preview (content tidak ada di list response)
 					author: {
 						name: blog.author.name,
-						role: 'Author',
+						role: 'Writer',  // Default role (role tidak ada di list response)
 						avatar: './images/admin.webp',
 					},
 					featuredImage: blog.featuredImage || '/placeholder.svg',
