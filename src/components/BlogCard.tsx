@@ -42,9 +42,11 @@ const BlogCard = ({ blog, onReadMore }: BlogCardProps) => {
 			<Card className="h-full flex flex-col overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white dark:bg-gray-900">
 				{/* Featured Image */}
 				<div className="relative h-48 overflow-hidden">
+					{/* Featured Image dengan lazy loading untuk performance optimization */}
 					<img
 						src={blog.featuredImage}
 						alt={blog.title}
+						loading="lazy"  // Lazy loading untuk improve performance
 						className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
 						onError={(e) => {
 							// Fallback image jika featured image tidak ada
@@ -99,16 +101,17 @@ const BlogCard = ({ blog, onReadMore }: BlogCardProps) => {
 							<img
 								src={blog.author.avatar}
 								alt={blog.author.name}
+								loading="lazy"  // Lazy loading untuk avatar
 								className="w-10 h-10 rounded-full object-cover"
 								onError={(e) => {
 									e.currentTarget.src = '/placeholder.svg';
 								}}
 							/>
 							<div className="flex-1">
+								{/* Display author name saja (role/email tidak ada di list response) */}
 								<p className="font-medium text-gray-900 dark:text-white text-sm">
-									{blog.author.name}
+									By {blog.author.name}
 								</p>
-								<p className="text-gray-500 dark:text-gray-400 text-xs">{blog.author.role}</p>
 							</div>
 						</div>
 

@@ -96,33 +96,42 @@ const BlogDetail = ({ blogSlug, onBack, onRelatedBlogClick }: BlogDetailProps) =
 				// Track view untuk analytics - increment blog view count
 				await blogService.trackView(blogData.id);
 
-				// Load related blogs
+				// Load related blogs dengan defensive checking
 				try {
 					const relatedData = await blogService.getRelated(blogData.id, 3);
-					const convertedRelated: BlogPost[] = relatedData.map((relatedBlog: BlogResponse) => ({
-						id: relatedBlog.id,
-						title: relatedBlog.title,
-						slug: relatedBlog.slug,
-						excerpt: relatedBlog.excerpt,
-						content: relatedBlog.content,
-						author: {
-							name: relatedBlog.author.name,
-							role: 'Author',
-							avatar: './images/admin.webp',
-						},
-						featuredImage: relatedBlog.featuredImage || '/placeholder.svg',
-						category: relatedBlog.category.name,
-						tags: relatedBlog.tags.map((tag) => tag.name),
-						publishedAt: relatedBlog.publishedAt,
-						updatedAt: relatedBlog.updatedAt,
-						readTime: relatedBlog.readTime,
-						isPublished: relatedBlog.isPublished,
-						views: relatedBlog.views,
-					}));
-					setRelatedBlogs(convertedRelated);
+					
+					// Defensive check: pastikan relatedData adalah array sebelum .map()
+					if (Array.isArray(relatedData) && relatedData.length > 0) {
+						const convertedRelated: BlogPost[] = relatedData.map((relatedBlog: BlogResponse) => ({
+							id: relatedBlog.id,
+							title: relatedBlog.title,
+							slug: relatedBlog.slug,
+							excerpt: relatedBlog.excerpt,
+							content: relatedBlog.content,
+							author: {
+								name: relatedBlog.author.name,
+								role: 'Author',
+								avatar: './images/admin.webp',
+							},
+							featuredImage: relatedBlog.featuredImage || '/placeholder.svg',
+							category: relatedBlog.category.name,
+							tags: relatedBlog.tags.map((tag) => tag.name),
+							publishedAt: relatedBlog.publishedAt,
+							updatedAt: relatedBlog.updatedAt,
+							readTime: relatedBlog.readTime,
+							isPublished: relatedBlog.isPublished,
+							views: relatedBlog.views,
+						}));
+						setRelatedBlogs(convertedRelated);
+						console.log('✅ [RELATED BLOGS] Loaded', convertedRelated.length, 'related blogs');
+					} else {
+						console.warn('⚠️ [RELATED BLOGS] No related blogs found or invalid response format');
+						setRelatedBlogs([]);
+					}
 				} catch (relatedError) {
-					console.error('Failed to load related blogs:', relatedError);
-					// Don't show error for related blogs, it's not critical
+					console.error('❌ [RELATED BLOGS] Failed to load related blogs:', relatedError);
+					// Don't show error for related blogs, it's not critical - set empty array
+					setRelatedBlogs([]);
 				}
 			} catch (error) {
 				console.error('Failed to load blog:', error);

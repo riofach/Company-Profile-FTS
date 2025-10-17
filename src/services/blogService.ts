@@ -2,12 +2,13 @@
 // Menyediakan fungsi-fungsi untuk komunikasi dengan Blog API
 
 // Interface untuk Blog response dari API
+// UPDATED: Backend optimizations - content, author.email removed from list responses
 export interface BlogResponse {
 	id: string;
 	title: string;
 	slug: string;
 	excerpt: string;
-	content: string;
+	content?: string;  // Optional - only available in detail view, NOT in list
 	featuredImage?: string;
 	isPublished: boolean;
 	readTime: number;
@@ -24,7 +25,9 @@ export interface BlogResponse {
 	author: {
 		id: string;
 		name: string;
-		email?: string;
+		// email removed from list response for privacy/performance
+		email?: string;  // Only in detail view
+		role?: string;   // Only in detail view
 	};
 	tags: Array<{
 		id: string;
@@ -44,13 +47,11 @@ export interface PaginationResponse {
 }
 
 // Interface untuk Blog List response
+// UPDATED: Backend optimizations - filters removed for performance
 export interface BlogListResponse {
 	blogs: BlogResponse[];
 	pagination: PaginationResponse;
-	filters?: {
-		categories: Array<{ id: string; name: string; slug: string }>;
-		tags: Array<{ id: string; name: string; slug: string }>;
-	};
+	// filters removed - load separately via categoryService.getAll() and tagService.getAll()
 }
 
 // Interface untuk Blog Stats response
@@ -181,13 +182,29 @@ export const blogService = {
 	 * @param blogId - Blog ID yang akan di-track views-nya
 	 */
 	trackView: async (blogId: string): Promise<void> => {
+		// Debug logging untuk troubleshooting
+		const endpoint = `/blogs/${blogId}/view`;
+		const fullUrl = `${API_BASE_URL}${endpoint}`;
+		
+		console.log('📊 [VIEW TRACKING] Starting view track...');
+		console.log('📊 [VIEW TRACKING] Blog ID:', blogId);
+		console.log('📊 [VIEW TRACKING] Full URL:', fullUrl);
+		console.log('📊 [VIEW TRACKING] Method: POST');
+		
 		try {
-			await apiRequest<{ success: boolean }>(`/blogs/${blogId}/view`, {
+			const startTime = Date.now();
+			await apiRequest<{ success: boolean }>(endpoint, {
 				method: 'POST',
 			});
+			const duration = Date.now() - startTime;
+			
+			console.log('✅ [VIEW TRACKING] Success!');
+			console.log('✅ [VIEW TRACKING] Duration:', duration, 'ms');
 		} catch (error) {
 			// Silent fail untuk tracking view - tidak perlu interrupt UX
-			console.warn('Failed to track blog view:', error);
+			console.error('❌ [VIEW TRACKING] Failed to track blog view');
+			console.error('❌ [VIEW TRACKING] Error:', error);
+			console.error('❌ [VIEW TRACKING] Blog ID:', blogId);
 		}
 	},
 };
