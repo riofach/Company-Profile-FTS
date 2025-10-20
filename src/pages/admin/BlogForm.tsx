@@ -26,7 +26,8 @@ import {
 	Upload,
 	Eye,
 } from 'lucide-react';
-import { blogAdminService, categoryService, tagService, BlogResponse } from '@/services/blogService';
+// Import blogService untuk fetch single blog detail, blogAdminService untuk create/update/delete
+import { blogService, blogAdminService, categoryService, tagService, BlogResponse } from '@/services/blogService';
 import { uploadApi } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -91,26 +92,24 @@ const BlogForm = () => {
 	}, [id]);
 
 	// ✅ Function untuk load blog data (edit mode)
-	// Fetches specific blog by ID dari admin endpoint (includes drafts)
+	// Fetches specific blog by ID using detail endpoint (includes full content)
+	// FIXED: Pakai getById() instead of getAllAdmin() untuk proper content fetching
+	// Detail endpoint includes full 'content' field, list endpoint tidak (backend optimization)
 	const loadBlogData = async (blogId: string) => {
 		setIsLoadingData(true);
 
 		try {
-			// ✅ Fetch dengan limit 100 untuk ensure blog is included (not just 1 random)
-			// Better than 1: guarantees kita dapat blog yang diminta
-			const blogData: BlogResponse = await blogAdminService.getAllAdmin({ limit: 100 }).then((res) => {
-				// ✅ Cari blog dengan exact ID match
-				const blog = res.blogs.find((b) => b.id === blogId);
-				if (!blog) throw new Error('Blog not found');
-				return blog;
-			});
+			// ✅ FIXED: Pakai getById() untuk fetch single blog dengan FULL content
+			// List endpoint (getAllAdmin) tidak include content untuk performance optimization
+			// Detail endpoint (getById) returns complete blog data termasuk content
+			const blogData: BlogResponse = await blogService.getById(blogId);
 
 			// Populate form dengan data blog
 			setFormData({
 				title: blogData.title,
 				slug: blogData.slug,
 				excerpt: blogData.excerpt,
-				content: blogData.content,
+				content: blogData.content || '', // Content akan tersedia dari detail endpoint
 				categoryId: blogData.category.id,
 				tags: blogData.tags.map((t) => t.name),
 				featuredImage: blogData.featuredImage || '',
