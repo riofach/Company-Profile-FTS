@@ -533,16 +533,26 @@ const BlogForm = () => {
 
 							<div className="space-y-2">
 								<Label htmlFor="content">Content * (Minimum 100 characters required)</Label>
-								{/* ✅ RichTextEditor needs key to properly re-render when value changes */}
-								{/* key={id || 'new'} forces React to remount component with new value */}
-								{/* This ensures ReactQuill properly displays loaded blog content */}
-								<RichTextEditor
-									key={id || 'new'}
-									value={formData.content}
-									onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
-									placeholder="Write your blog content here... (minimum 100 characters)"
-									minHeight="300px"
-								/>
+								{/* ✅ CRITICAL FIX: Don't render RichTextEditor until data is loaded */}
+								{/* This prevents ReactQuill from initializing with empty value */}
+								{/* In edit mode: wait for isLoadingData to be false (data loaded) */}
+								{/* In create mode: isLoadingData is always false, render immediately */}
+								{!isLoadingData ? (
+									<RichTextEditor
+										key={id || 'new'}
+										value={formData.content}
+										onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
+										placeholder="Write your blog content here... (minimum 100 characters)"
+										minHeight="300px"
+									/>
+								) : (
+									<div className="border rounded-lg p-4 min-h-[300px] flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+										<div className="text-center">
+											<div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+											<p className="text-sm text-muted-foreground">Loading content...</p>
+										</div>
+									</div>
+								)}
 								{/* Character counter untuk Content field dengan visual feedback (HTML tags tidak dihitung) */}
 								{/* ✅ Safety: Use nullish coalescing to prevent undefined.replace() error */}
 								<div className="flex justify-between items-center flex-wrap gap-2">
