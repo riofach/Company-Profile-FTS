@@ -533,7 +533,11 @@ const BlogForm = () => {
 
 							<div className="space-y-2">
 								<Label htmlFor="content">Content * (Minimum 100 characters required)</Label>
+								{/* ✅ RichTextEditor needs key to properly re-render when value changes */}
+								{/* key={id || 'new'} forces React to remount component with new value */}
+								{/* This ensures ReactQuill properly displays loaded blog content */}
 								<RichTextEditor
+									key={id || 'new'}
 									value={formData.content}
 									onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
 									placeholder="Write your blog content here... (minimum 100 characters)"
