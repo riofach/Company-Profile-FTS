@@ -26,7 +26,8 @@ import {
 	Upload,
 	Eye,
 } from 'lucide-react';
-import { blogAdminService, categoryService, tagService, BlogResponse } from '@/services/blogService';
+// Import blogService untuk fetch single blog detail, blogAdminService untuk create/update/delete
+import { blogService, blogAdminService, categoryService, tagService, BlogResponse } from '@/services/blogService';
 import { uploadApi } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -90,23 +91,25 @@ const BlogForm = () => {
 		}
 	}, [id]);
 
-	// Function untuk load blog data (edit mode)
+	// ✅ Function untuk load blog data (edit mode)
+	// Fetches specific blog by ID using detail endpoint (includes full content)
+	// FIXED: Pakai getById() instead of getAllAdmin() untuk proper content fetching
+	// Detail endpoint includes full 'content' field, list endpoint tidak (backend optimization)
 	const loadBlogData = async (blogId: string) => {
 		setIsLoadingData(true);
 
 		try {
-			const blogData: BlogResponse = await blogAdminService.getAllAdmin({ limit: 1 }).then((res) => {
-				const blog = res.blogs.find((b) => b.id === blogId);
-				if (!blog) throw new Error('Blog not found');
-				return blog;
-			});
+			// ✅ FIXED: Pakai getById() untuk fetch single blog dengan FULL content
+			// List endpoint (getAllAdmin) tidak include content untuk performance optimization
+			// Detail endpoint (getById) returns complete blog data termasuk content
+			const blogData: BlogResponse = await blogService.getById(blogId);
 
 			// Populate form dengan data blog
 			setFormData({
 				title: blogData.title,
 				slug: blogData.slug,
 				excerpt: blogData.excerpt,
-				content: blogData.content,
+				content: blogData.content || '', // Content akan tersedia dari detail endpoint
 				categoryId: blogData.category.id,
 				tags: blogData.tags.map((t) => t.name),
 				featuredImage: blogData.featuredImage || '',
@@ -140,13 +143,15 @@ const BlogForm = () => {
 			.trim();
 	};
 
-	// Handle title change and auto-generate slug (only for new blog)
+	// ✅ Handle title change and auto-generate slug
+	// Auto-generate slug dalam BOTH create AND edit mode untuk consistency
 	const handleTitleChange = (value: string) => {
 		setFormData((prev) => ({
 			...prev,
 			title: value,
-			// Only auto-generate slug jika bukan edit mode
-			slug: !id ? generateSlug(value) : prev.slug,
+			// ✅ Generate slug otomatis di both mode (create dan edit)
+			// This ensures slug always matches title untuk better UX
+			slug: generateSlug(value),
 		}));
 	};
 
@@ -279,8 +284,9 @@ const BlogForm = () => {
 			return false;
 		}
 
-		// Content validation
-		const textContent = formData.content.replace(/<[^>]*>/g, '');
+		// ✅ Content validation - with safety check for undefined
+		// Use nullish coalescing to prevent undefined.replace() error
+		const textContent = (formData.content || '').replace(/<[^>]*>/g, '');
 		if (textContent.length < 100) {
 			toast({
 				title: 'Invalid Content',
@@ -526,34 +532,50 @@ const BlogForm = () => {
 
 							<div className="space-y-2">
 								<Label htmlFor="content">Content * (Minimum 100 characters required)</Label>
-								<RichTextEditor
-									value={formData.content}
-									onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
-									placeholder="Write your blog content here... (minimum 100 characters)"
-									minHeight="300px"
-								/>
+								{/* ✅ CRITICAL FIX: Don't render RichTextEditor until data is loaded */}
+								{/* This prevents ReactQuill from initializing with empty value */}
+								{/* In edit mode: wait for isLoadingData to be false (data loaded) */}
+								{/* In create mode: isLoadingData is always false, render immediately */}
+								{!isLoadingData ? (
+									<RichTextEditor
+										key={id || 'new'}
+										value={formData.content}
+										onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
+										placeholder="Write your blog content here... (minimum 100 characters)"
+										minHeight="300px"
+									/>
+								) : (
+									<div className="border rounded-lg p-4 min-h-[300px] flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+										<div className="text-center">
+											<div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+											<p className="text-sm text-muted-foreground">Loading content...</p>
+										</div>
+									</div>
+								)}
 								{/* Character counter untuk Content field dengan visual feedback (HTML tags tidak dihitung) */}
+								{/* ✅ Safety: Use nullish coalescing to prevent undefined.replace() error */}
 								<div className="flex justify-between items-center flex-wrap gap-2">
 									{/* Show character count excluding HTML tags */}
+									{/* ✅ (formData.content || '') ensures we never call .replace() on undefined */}
 									<p className={`text-xs ${
-										formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 
+										(formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (formData.content || '').length > 0 
 											? 'text-yellow-600 font-medium' 
 											: 'text-muted-foreground'
 									}`}>
-										{formData.content.replace(/<[^>]*>/g, '').length} characters (HTML not counted)
-										{formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 && (
+										{(formData.content || '').replace(/<[^>]*>/g, '').length} characters (HTML not counted)
+										{(formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (formData.content || '').length > 0 && (
 											<span className="ml-2 text-yellow-600 font-semibold">
-												({100 - formData.content.replace(/<[^>]*>/g, '').length} more needed)
+												({100 - (formData.content || '').replace(/<[^>]*>/g, '').length} more needed)
 											</span>
 										)}
 									</p>
 									{/* Status badge untuk visual indication */}
-									{formData.content.replace(/<[^>]*>/g, '').length >= 100 && (
+									{(formData.content || '').replace(/<[^>]*>/g, '').length >= 100 && (
 										<span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-2 py-1 rounded">
 											✓ Valid
 										</span>
 									)}
-									{formData.content.length > 0 && formData.content.replace(/<[^>]*>/g, '').length < 100 && (
+									{(formData.content || '').length > 0 && (formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (
 										<span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-2 py-1 rounded">
 											⚠ Too short
 										</span>

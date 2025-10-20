@@ -1,6 +1,9 @@
 // Blog Service untuk FTS Frontend - Blog API Integration
 // Menyediakan fungsi-fungsi untuk komunikasi dengan Blog API
 
+// Import logger untuk safe logging (dev only, production silent)
+import { logger } from '@/utils/logger';
+
 // Interface untuk Blog response dari API
 // UPDATED: Backend optimizations - content, author.email removed from list responses
 export interface BlogResponse {
@@ -80,10 +83,22 @@ export interface Tag {
 }
 
 // Base API configuration
-// ⚠️ SECURITY: Backend URL MUST come from environment variable\n// Never use hardcoded URL as fallback (production security risk)\nconst API_BASE_URL = import.meta.env.VITE_API_BASE_URL;\nif (!API_BASE_URL) {\n\tthrow new Error('VITE_API_BASE_URL environment variable is not configured');\n}
+// ⚠️ SECURITY: Lazy initialization to avoid throwing error at module load time
+// Use getter pattern to evaluate at runtime, not at module import
+const getApiBaseUrl = (): string => {
+	const url = import.meta.env.VITE_API_BASE_URL;
+	// Sensible fallback untuk development
+	if (!url) {
+		const fallback = 'http://localhost:3000/api/v1';
+		logger.warn('VITE_API_BASE_URL not configured, using fallback:', fallback);
+		return fallback;
+	}
+	return url;
+};
 
 // Helper function untuk membuat API request
 const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+	const API_BASE_URL = getApiBaseUrl();  // Get at runtime, not module load
 	const token = localStorage.getItem('accessToken');
 
 	const config: RequestInit = {
@@ -120,7 +135,8 @@ const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promi
 
 		return data;
 	} catch (error) {
-		console.error('API Request Error:', error);
+		// Log only in development (never expose error details in production)
+		logger.error('Blog API Request Error:', error);
 		throw error;
 	}
 };
@@ -182,14 +198,11 @@ export const blogService = {
 	 * @param blogId - Blog ID yang akan di-track views-nya
 	 */
 	trackView: async (blogId: string): Promise<void> => {
-		// Debug logging untuk troubleshooting
+		// Security: Don't expose full URL in logs (even in dev)
 		const endpoint = `/blogs/${blogId}/view`;
-		const fullUrl = `${API_BASE_URL}${endpoint}`;
 		
-		console.log('📊 [VIEW TRACKING] Starting view track...');
-		console.log('📊 [VIEW TRACKING] Blog ID:', blogId);
-		console.log('📊 [VIEW TRACKING] Full URL:', fullUrl);
-		console.log('📊 [VIEW TRACKING] Method: POST');
+		// Safe logging - dev only, no URLs exposed
+		logger.debug('📊 [VIEW TRACKING] Starting view track for blog:', blogId);
 		
 		try {
 			const startTime = Date.now();
@@ -198,13 +211,12 @@ export const blogService = {
 			});
 			const duration = Date.now() - startTime;
 			
-			console.log('✅ [VIEW TRACKING] Success!');
-			console.log('✅ [VIEW TRACKING] Duration:', duration, 'ms');
+			// Log success in dev mode only
+			logger.debug('✅ [VIEW TRACKING] Success! Duration:', duration, 'ms');
 		} catch (error) {
 			// Silent fail untuk tracking view - tidak perlu interrupt UX
-			console.error('❌ [VIEW TRACKING] Failed to track blog view');
-			console.error('❌ [VIEW TRACKING] Error:', error);
-			console.error('❌ [VIEW TRACKING] Blog ID:', blogId);
+			// Never log error details (security risk - could expose backend URL)
+			logger.error('❌ [VIEW TRACKING] Failed to track blog view for ID:', blogId);
 		}
 	},
 };

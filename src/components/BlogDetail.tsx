@@ -12,6 +12,7 @@ import { blogService, BlogResponse } from '@/services/blogService';
 import BlogCard from './BlogCard';
 import { formatBlogDateString } from '@/utils/dateFormatter';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/utils/logger';
 
 // Interface untuk BlogPost yang compatible dengan BlogCard
 interface BlogPost {
@@ -123,18 +124,20 @@ const BlogDetail = ({ blogSlug, onBack, onRelatedBlogClick }: BlogDetailProps) =
 							views: relatedBlog.views,
 						}));
 						setRelatedBlogs(convertedRelated);
-						console.log('✅ [RELATED BLOGS] Loaded', convertedRelated.length, 'related blogs');
+						logger.debug('✅ [RELATED BLOGS] Loaded', convertedRelated.length, 'related blogs');
 					} else {
-						console.warn('⚠️ [RELATED BLOGS] No related blogs found or invalid response format');
+						logger.warn('⚠️ [RELATED BLOGS] No related blogs found or invalid response format');
 						setRelatedBlogs([]);
 					}
 				} catch (relatedError) {
-					console.error('❌ [RELATED BLOGS] Failed to load related blogs:', relatedError);
+					// Safe logger - dev only
+					logger.error('❌ [RELATED BLOGS] Failed to load related blogs');
 					// Don't show error for related blogs, it's not critical - set empty array
 					setRelatedBlogs([]);
 				}
 			} catch (error) {
-				console.error('Failed to load blog:', error);
+				// Safe logger - dev only, never expose error details
+				logger.error('Failed to load blog');
 				setError(
 					error instanceof Error ? error.message : 'Failed to load blog'
 				);
