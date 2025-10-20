@@ -537,27 +537,29 @@ const BlogForm = () => {
 									minHeight="300px"
 								/>
 								{/* Character counter untuk Content field dengan visual feedback (HTML tags tidak dihitung) */}
+								{/* ✅ Safety: Use nullish coalescing to prevent undefined.replace() error */}
 								<div className="flex justify-between items-center flex-wrap gap-2">
 									{/* Show character count excluding HTML tags */}
+									{/* ✅ (formData.content || '') ensures we never call .replace() on undefined */}
 									<p className={`text-xs ${
-										formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 
+										(formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (formData.content || '').length > 0 
 											? 'text-yellow-600 font-medium' 
 											: 'text-muted-foreground'
 									}`}>
-										{formData.content.replace(/<[^>]*>/g, '').length} characters (HTML not counted)
-										{formData.content.replace(/<[^>]*>/g, '').length < 100 && formData.content.length > 0 && (
+										{(formData.content || '').replace(/<[^>]*>/g, '').length} characters (HTML not counted)
+										{(formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (formData.content || '').length > 0 && (
 											<span className="ml-2 text-yellow-600 font-semibold">
-												({100 - formData.content.replace(/<[^>]*>/g, '').length} more needed)
+												({100 - (formData.content || '').replace(/<[^>]*>/g, '').length} more needed)
 											</span>
 										)}
 									</p>
 									{/* Status badge untuk visual indication */}
-									{formData.content.replace(/<[^>]*>/g, '').length >= 100 && (
+									{(formData.content || '').replace(/<[^>]*>/g, '').length >= 100 && (
 										<span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 px-2 py-1 rounded">
 											✓ Valid
 										</span>
 									)}
-									{formData.content.length > 0 && formData.content.replace(/<[^>]*>/g, '').length < 100 && (
+									{(formData.content || '').length > 0 && (formData.content || '').replace(/<[^>]*>/g, '').length < 100 && (
 										<span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-2 py-1 rounded">
 											⚠ Too short
 										</span>
