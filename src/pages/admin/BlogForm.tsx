@@ -144,13 +144,15 @@ const BlogForm = () => {
 			.trim();
 	};
 
-	// Handle title change and auto-generate slug (only for new blog)
+	// ✅ Handle title change and auto-generate slug
+	// Auto-generate slug dalam BOTH create AND edit mode untuk consistency
 	const handleTitleChange = (value: string) => {
 		setFormData((prev) => ({
 			...prev,
 			title: value,
-			// Only auto-generate slug jika bukan edit mode
-			slug: !id ? generateSlug(value) : prev.slug,
+			// ✅ Generate slug otomatis di both mode (create dan edit)
+			// This ensures slug always matches title untuk better UX
+			slug: generateSlug(value),
 		}));
 	};
 
@@ -283,8 +285,9 @@ const BlogForm = () => {
 			return false;
 		}
 
-		// Content validation
-		const textContent = formData.content.replace(/<[^>]*>/g, '');
+		// ✅ Content validation - with safety check for undefined
+		// Use nullish coalescing to prevent undefined.replace() error
+		const textContent = (formData.content || '').replace(/<[^>]*>/g, '');
 		if (textContent.length < 100) {
 			toast({
 				title: 'Invalid Content',
