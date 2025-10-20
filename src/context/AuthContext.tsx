@@ -83,26 +83,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 				return { success: true };
 			} else {
-				// Handle specific error messages for better UX
-				let errorMessage = 'Email/Password Wrong';
-
-				if (response.error) {
-					// Check for specific error patterns and provide user-friendly messages
-					if (
-						response.error.toLowerCase().includes('unauthorized') ||
-						response.error.toLowerCase().includes('invalid') ||
-						response.error.toLowerCase().includes('wrong')
-					) {
-						errorMessage = 'Email/Password Wrong';
-					} else if (response.error.toLowerCase().includes('not found')) {
-						errorMessage = 'Email not found';
-					} else if (response.error.toLowerCase().includes('password')) {
-						errorMessage = 'Email/Password Wrong';
-					} else {
-						// For other errors, provide a generic message
-						errorMessage = 'Login failed. Please try again.';
-					}
-				}
+				// Trust the sanitized error message from logger (already user-friendly)
+				// No need to re-process, logger.getSafeErrorMessage() already handled it
+				const errorMessage = response.error || 'An unexpected error occurred. Please try again.';
 
 				return { success: false, error: errorMessage };
 			}
