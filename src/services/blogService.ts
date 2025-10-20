@@ -80,7 +80,7 @@ export interface Tag {
 }
 
 // Base API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://be-fts-production.up.railway.app/api/v1';
+// ⚠️ SECURITY: Backend URL MUST come from environment variable\n// Never use hardcoded URL as fallback (production security risk)\nconst API_BASE_URL = import.meta.env.VITE_API_BASE_URL;\nif (!API_BASE_URL) {\n\tthrow new Error('VITE_API_BASE_URL environment variable is not configured');\n}
 
 // Helper function untuk membuat API request
 const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {

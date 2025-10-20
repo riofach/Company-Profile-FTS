@@ -1,6 +1,8 @@
 // API Service untuk FTS Backend Integration
 // Menyediakan fungsi-fungsi untuk komunikasi dengan backend API
 
+import { logger } from '@/utils/logger';
+
 // Interface untuk API response
 export interface ApiResponse<T = unknown> {
 	success: boolean;
@@ -77,7 +79,13 @@ class ApiService {
 	private baseURL: string;
 
 	constructor() {
-		this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+		// ⚠️ SECURITY: Backend URL MUST come from environment variable
+		// Never use hardcoded URL (security risk)
+		const apiUrl = import.meta.env.VITE_API_BASE_URL;
+		if (!apiUrl) {
+			throw new Error('VITE_API_BASE_URL environment variable is not configured');
+		}
+		this.baseURL = apiUrl;
 	}
 
 	// Helper method untuk membuat request
@@ -143,10 +151,11 @@ class ApiService {
 				message: data.message,
 			};
 		} catch (error) {
-			console.error('API Request Error:', error);
+			// Log only in development (never expose error details in production)
+			logger.error('API Request Error:', error);
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Unknown error occurred',
+				error: logger.getSafeErrorMessage(error),  // ✅ Sanitized message
 			};
 		}
 	}
@@ -236,10 +245,11 @@ class ApiService {
 				message: data.message,
 			};
 		} catch (error) {
-			console.error('Upload Error:', error);
+			// Log only in development
+			logger.error('Upload Error:', error);
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Upload failed',
+				error: logger.getSafeErrorMessage(error),  // ✅ Sanitized message
 			};
 		}
 	}
@@ -275,10 +285,11 @@ class ApiService {
 				message: data.message,
 			};
 		} catch (error) {
-			console.error('Upload Error:', error);
+			// Log only in development
+			logger.error('Upload Error:', error);
 			return {
 				success: false,
-				error: error instanceof Error ? error.message : 'Upload failed',
+				error: logger.getSafeErrorMessage(error),  // ✅ Sanitized message
 			};
 		}
 	}
@@ -350,7 +361,8 @@ class ApiService {
 			}
 			return false;
 		} catch (error) {
-			console.error('Permission check failed:', error);
+			// Log only in development
+			logger.error('Permission check failed:', error);
 			return false;
 		}
 	}
