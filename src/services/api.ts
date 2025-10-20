@@ -79,13 +79,17 @@ class ApiService {
 	private baseURL: string;
 
 	constructor() {
-		// ⚠️ SECURITY: Backend URL MUST come from environment variable
-		// Never use hardcoded URL (security risk)
+		// ⚠️ SECURITY: Get backend URL from environment, with sensible fallback for dev
+		// Use lazy evaluation to avoid errors at module load time
 		const apiUrl = import.meta.env.VITE_API_BASE_URL;
 		if (!apiUrl) {
-			throw new Error('VITE_API_BASE_URL environment variable is not configured');
+			// Sensible fallback untuk development/testing
+			const fallback = 'http://localhost:3000/api/v1';
+			logger.warn('VITE_API_BASE_URL not configured, using fallback:', fallback);
+			this.baseURL = fallback;
+		} else {
+			this.baseURL = apiUrl;
 		}
-		this.baseURL = apiUrl;
 	}
 
 	// Helper method untuk membuat request

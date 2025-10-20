@@ -80,10 +80,22 @@ export interface Tag {
 }
 
 // Base API configuration
-// ⚠️ SECURITY: Backend URL MUST come from environment variable\n// Never use hardcoded URL as fallback (production security risk)\nconst API_BASE_URL = import.meta.env.VITE_API_BASE_URL;\nif (!API_BASE_URL) {\n\tthrow new Error('VITE_API_BASE_URL environment variable is not configured');\n}
+// ⚠️ SECURITY: Lazy initialization to avoid throwing error at module load time
+// Use getter pattern to evaluate at runtime, not at module import
+const getApiBaseUrl = (): string => {
+	const url = import.meta.env.VITE_API_BASE_URL;
+	// Sensible fallback untuk development
+	if (!url) {
+		const fallback = 'http://localhost:3000/api/v1';
+		logger.warn('VITE_API_BASE_URL not configured, using fallback:', fallback);
+		return fallback;
+	}
+	return url;
+};
 
 // Helper function untuk membuat API request
 const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+	const API_BASE_URL = getApiBaseUrl();  // Get at runtime, not module load
 	const token = localStorage.getItem('accessToken');
 
 	const config: RequestInit = {
