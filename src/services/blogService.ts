@@ -132,7 +132,8 @@ const apiRequest = async <T>(endpoint: string, options: RequestInit = {}): Promi
 
 		return data;
 	} catch (error) {
-		console.error('API Request Error:', error);
+		// Log only in development (never expose error details in production)
+		logger.error('Blog API Request Error:', error);
 		throw error;
 	}
 };
@@ -194,14 +195,11 @@ export const blogService = {
 	 * @param blogId - Blog ID yang akan di-track views-nya
 	 */
 	trackView: async (blogId: string): Promise<void> => {
-		// Debug logging untuk troubleshooting
+		// Security: Don't expose full URL in logs (even in dev)
 		const endpoint = `/blogs/${blogId}/view`;
-		const fullUrl = `${API_BASE_URL}${endpoint}`;
 		
-		console.log('📊 [VIEW TRACKING] Starting view track...');
-		console.log('📊 [VIEW TRACKING] Blog ID:', blogId);
-		console.log('📊 [VIEW TRACKING] Full URL:', fullUrl);
-		console.log('📊 [VIEW TRACKING] Method: POST');
+		// Safe logging - dev only, no URLs exposed
+		logger.debug('📊 [VIEW TRACKING] Starting view track for blog:', blogId);
 		
 		try {
 			const startTime = Date.now();
@@ -210,13 +208,12 @@ export const blogService = {
 			});
 			const duration = Date.now() - startTime;
 			
-			console.log('✅ [VIEW TRACKING] Success!');
-			console.log('✅ [VIEW TRACKING] Duration:', duration, 'ms');
+			// Log success in dev mode only
+			logger.debug('✅ [VIEW TRACKING] Success! Duration:', duration, 'ms');
 		} catch (error) {
 			// Silent fail untuk tracking view - tidak perlu interrupt UX
-			console.error('❌ [VIEW TRACKING] Failed to track blog view');
-			console.error('❌ [VIEW TRACKING] Error:', error);
-			console.error('❌ [VIEW TRACKING] Blog ID:', blogId);
+			// Never log error details (security risk - could expose backend URL)
+			logger.error('❌ [VIEW TRACKING] Failed to track blog view for ID:', blogId);
 		}
 	},
 };
