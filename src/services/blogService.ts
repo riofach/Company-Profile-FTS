@@ -1,6 +1,9 @@
 // Blog Service untuk FTS Frontend - Blog API Integration
 // Menyediakan fungsi-fungsi untuk komunikasi dengan Blog API
 
+// Import logger untuk safe logging (dev only, production silent)
+import { logger } from '@/utils/logger';
+
 // Interface untuk Blog response dari API
 // UPDATED: Backend optimizations - content, author.email removed from list responses
 export interface BlogResponse {
