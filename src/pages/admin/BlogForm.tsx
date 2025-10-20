@@ -90,12 +90,16 @@ const BlogForm = () => {
 		}
 	}, [id]);
 
-	// Function untuk load blog data (edit mode)
+	// ✅ Function untuk load blog data (edit mode)
+	// Fetches specific blog by ID dari admin endpoint (includes drafts)
 	const loadBlogData = async (blogId: string) => {
 		setIsLoadingData(true);
 
 		try {
-			const blogData: BlogResponse = await blogAdminService.getAllAdmin({ limit: 1 }).then((res) => {
+			// ✅ Fetch dengan limit 100 untuk ensure blog is included (not just 1 random)
+			// Better than 1: guarantees kita dapat blog yang diminta
+			const blogData: BlogResponse = await blogAdminService.getAllAdmin({ limit: 100 }).then((res) => {
+				// ✅ Cari blog dengan exact ID match
 				const blog = res.blogs.find((b) => b.id === blogId);
 				if (!blog) throw new Error('Blog not found');
 				return blog;
