@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FolderOpen, BarChart3, Users, FileText, TrendingUp, Clock, Activity } from 'lucide-react';
+// Import icons untuk dashboard stats cards
+import { FolderOpen, BarChart3, Users, FileText, TrendingUp, Clock, Activity, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME } from '@/lib/brand';
 import {
@@ -13,6 +14,8 @@ import {
 	type User,
 	type ActivityLog,
 } from '@/services/api';
+// Import blogService untuk fetch blog stats (totalBlogs dan totalViews)
+import { blogService, type BlogStatsResponse } from '@/services/blogService';
 import { useToast } from '@/hooks/use-toast';
 
 // Komponen Admin Dashboard untuk overview dan statistik
@@ -29,6 +32,15 @@ const AdminDashboard = () => {
 		recentProjects: 0,
 		recentActivity: 0,
 	});
+	// State untuk blog stats (totalBlogs dan totalViews)
+	const [blogStats, setBlogStats] = useState<BlogStatsResponse>({
+		totalBlogs: 0,
+		totalPublished: 0,
+		totalDrafts: 0,
+		totalViews: 0,
+		totalCategories: 0,
+		totalTags: 0,
+	});
 	const [recentProjects, setRecentProjects] = useState<Project[]>([]);
 	const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -43,10 +55,12 @@ const AdminDashboard = () => {
 		setIsLoading(true);
 		try {
 			// Load data secara paralel untuk performance yang lebih baik
-			const [projectsResponse, usersResponse, activityResponse] = await Promise.all([
+			// Tambahkan blogService.getStats() untuk fetch blog statistics
+			const [projectsResponse, usersResponse, activityResponse, blogStatsData] = await Promise.all([
 				projectsApi.getAll(),
 				adminApi.getUsers(),
 				adminApi.getActivityLogs(),
+				blogService.getStats(), // Fetch blog stats untuk Total Blogs dan Total Views cards
 			]);
 
 			// Handle projects data
@@ -112,6 +126,9 @@ const AdminDashboard = () => {
 			};
 
 			setStats(calculatedStats);
+
+			// Set blog stats untuk Total Blogs dan Total Views cards
+			setBlogStats(blogStatsData);
 		} catch (error) {
 			console.error('Failed to load dashboard data:', error);
 			toast({
@@ -229,30 +246,30 @@ const AdminDashboard = () => {
 					</Card>
 				</motion.div>
 
-				{/* Recent Projects Card */}
+				{/* Total Blogs Card - Display total blog posts from blog stats */}
 				<motion.div variants={itemVariants}>
 					<Card className="p-6 hover:shadow-lg transition-all duration-300">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Recent Projects</p>
-								<p className="text-3xl font-bold">{stats.recentProjects}</p>
-								<p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Blogs</p>
+								<p className="text-3xl font-bold">{blogStats.totalBlogs}</p>
+								<p className="text-xs text-muted-foreground mt-1">{blogStats.totalPublished} published</p>
 							</div>
-							<TrendingUp className="h-10 w-10 text-primary" />
+							<FileText className="h-10 w-10 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
 
-				{/* Activity Logs Card */}
+				{/* Total Views Card - Display total blog views from blog stats */}
 				<motion.div variants={itemVariants}>
 					<Card className="p-6 hover:shadow-lg transition-all duration-300">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Total Activity</p>
-								<p className="text-3xl font-bold">{stats.recentActivity}</p>
-								<p className="text-xs text-muted-foreground mt-1">System logs</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Views</p>
+								<p className="text-3xl font-bold">{blogStats.totalViews.toLocaleString()}</p>
+								<p className="text-xs text-muted-foreground mt-1">Blog views</p>
 							</div>
-							<Activity className="h-10 w-10 text-primary" />
+							<Eye className="h-10 w-10 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
