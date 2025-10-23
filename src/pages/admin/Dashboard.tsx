@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FolderOpen, BarChart3, Users, FileText, TrendingUp, Clock, Activity } from 'lucide-react';
+// Import icons untuk dashboard stats cards
+import { FolderOpen, BarChart3, Users, FileText, TrendingUp, Clock, Activity, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { COMPANY_NAME } from '@/lib/brand';
 import {
@@ -13,6 +14,8 @@ import {
 	type User,
 	type ActivityLog,
 } from '@/services/api';
+// Import blogService untuk fetch blog stats (totalBlogs dan totalViews)
+import { blogService, type BlogStatsResponse } from '@/services/blogService';
 import { useToast } from '@/hooks/use-toast';
 
 // Komponen Admin Dashboard untuk overview dan statistik
@@ -29,6 +32,15 @@ const AdminDashboard = () => {
 		recentProjects: 0,
 		recentActivity: 0,
 	});
+	// State untuk blog stats (totalBlogs dan totalViews)
+	const [blogStats, setBlogStats] = useState<BlogStatsResponse>({
+		totalBlogs: 0,
+		totalPublished: 0,
+		totalDrafts: 0,
+		totalViews: 0,
+		totalCategories: 0,
+		totalTags: 0,
+	});
 	const [recentProjects, setRecentProjects] = useState<Project[]>([]);
 	const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -43,16 +55,19 @@ const AdminDashboard = () => {
 		setIsLoading(true);
 		try {
 			// Load data secara paralel untuk performance yang lebih baik
-			const [projectsResponse, usersResponse, activityResponse] = await Promise.all([
+			// Tambahkan blogService.getStats() untuk fetch blog statistics
+			// UPDATED: Use Promise.allSettled untuk graceful error handling - dashboard tetap load meski 1 API gagal
+			const [projectsResponse, usersResponse, activityResponse, blogStatsResult] = await Promise.allSettled([
 				projectsApi.getAll(),
 				adminApi.getUsers(),
 				adminApi.getActivityLogs(),
+				blogService.getStats(), // Fetch blog stats untuk Total Blogs dan Total Views cards
 			]);
 
-			// Handle projects data
+			// Handle projects data dengan checking Promise.allSettled result
 			let projectsArray: Project[] = [];
-			if (projectsResponse.success && projectsResponse.data) {
-				projectsArray = Array.isArray(projectsResponse.data) ? projectsResponse.data : [];
+			if (projectsResponse.status === 'fulfilled' && projectsResponse.value.success && projectsResponse.value.data) {
+				projectsArray = Array.isArray(projectsResponse.value.data) ? projectsResponse.value.data : [];
 				
 				// Get recent projects (last 30 days) dan sort by date
 				const recent = projectsArray
@@ -67,25 +82,27 @@ const AdminDashboard = () => {
 				
 				setRecentProjects(recent);
 			} else {
-				toast({
-					title: 'Error',
-					description: projectsResponse.error || 'Failed to load projects',
-					variant: 'destructive',
-				});
+				const errorMsg = projectsResponse.status === 'rejected' 
+					? projectsResponse.reason?.message 
+					: projectsResponse.value?.error;
+				console.warn('Failed to load projects:', errorMsg);
 			}
 
-			// Handle users data
+			// Handle users data dengan checking Promise.allSettled result
 			let usersArray: User[] = [];
-			if (usersResponse.success && usersResponse.data) {
-				usersArray = Array.isArray(usersResponse.data) ? usersResponse.data : [];
+			if (usersResponse.status === 'fulfilled' && usersResponse.value.success && usersResponse.value.data) {
+				usersArray = Array.isArray(usersResponse.value.data) ? usersResponse.value.data : [];
 			} else {
-				console.warn('Failed to load users data:', usersResponse.error);
+				const errorMsg = usersResponse.status === 'rejected' 
+					? usersResponse.reason?.message 
+					: usersResponse.value?.error;
+				console.warn('Failed to load users data:', errorMsg);
 			}
 
-			// Handle activity logs data
+			// Handle activity logs data dengan checking Promise.allSettled result
 			let activityArray: ActivityLog[] = [];
-			if (activityResponse.success && activityResponse.data) {
-				activityArray = Array.isArray(activityResponse.data) ? activityResponse.data : [];
+			if (activityResponse.status === 'fulfilled' && activityResponse.value.success && activityResponse.value.data) {
+				activityArray = Array.isArray(activityResponse.value.data) ? activityResponse.value.data : [];
 				
 				// Get recent activity (last 10 activities)
 				const recent = activityArray
@@ -94,7 +111,10 @@ const AdminDashboard = () => {
 				
 				setRecentActivity(recent);
 			} else {
-				console.warn('Failed to load activity logs:', activityResponse.error);
+				const errorMsg = activityResponse.status === 'rejected' 
+					? activityResponse.reason?.message 
+					: activityResponse.value?.error;
+				console.warn('Failed to load activity logs:', errorMsg);
 			}
 
 			// Calculate stats dari data yang sudah di-load
@@ -112,6 +132,26 @@ const AdminDashboard = () => {
 			};
 
 			setStats(calculatedStats);
+
+			// Handle blog stats dengan checking Promise.allSettled result
+			// Graceful degradation: jika blog stats API gagal, gunakan default values (0)
+			if (blogStatsResult.status === 'fulfilled') {
+				setBlogStats(blogStatsResult.value);
+			} else {
+				// API gagal (500 Internal Server Error atau network error)
+				// Set default values agar dashboard tetap functional
+				console.warn('Failed to load blog stats:', blogStatsResult.reason?.message || 'Unknown error');
+				console.warn('⚠️ Blog stats endpoint may not be implemented yet. Using default values.');
+				
+				// Optional: Show toast untuk inform user
+				toast({
+					title: 'Blog Stats Unavailable',
+					description: 'Some blog statistics could not be loaded. Displaying default values.',
+					variant: 'default',
+				});
+				
+				// Keep default values (already set in useState initialization)
+			}
 		} catch (error) {
 			console.error('Failed to load dashboard data:', error);
 			toast({
@@ -229,30 +269,30 @@ const AdminDashboard = () => {
 					</Card>
 				</motion.div>
 
-				{/* Recent Projects Card */}
+				{/* Total Blogs Card - Display total blog posts from blog stats */}
 				<motion.div variants={itemVariants}>
 					<Card className="p-6 hover:shadow-lg transition-all duration-300">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Recent Projects</p>
-								<p className="text-3xl font-bold">{stats.recentProjects}</p>
-								<p className="text-xs text-muted-foreground mt-1">Last 30 days</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Blogs</p>
+								<p className="text-3xl font-bold">{blogStats.totalBlogs}</p>
+								<p className="text-xs text-muted-foreground mt-1">{blogStats.totalPublished} published</p>
 							</div>
-							<TrendingUp className="h-10 w-10 text-primary" />
+							<FileText className="h-10 w-10 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
 
-				{/* Activity Logs Card */}
+				{/* Total Views Card - Display total blog views from blog stats */}
 				<motion.div variants={itemVariants}>
 					<Card className="p-6 hover:shadow-lg transition-all duration-300">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-muted-foreground">Total Activity</p>
-								<p className="text-3xl font-bold">{stats.recentActivity}</p>
-								<p className="text-xs text-muted-foreground mt-1">System logs</p>
+								<p className="text-sm font-medium text-muted-foreground">Total Views</p>
+								<p className="text-3xl font-bold">{blogStats.totalViews.toLocaleString()}</p>
+								<p className="text-xs text-muted-foreground mt-1">Blog views</p>
 							</div>
-							<Activity className="h-10 w-10 text-primary" />
+							<Eye className="h-10 w-10 text-primary" />
 						</div>
 					</Card>
 				</motion.div>
