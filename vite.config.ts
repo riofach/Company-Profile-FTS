@@ -28,6 +28,8 @@ export default defineConfig(({ mode }) => ({
 		host: true,
 		allowedHosts: [
 			'company-profile-fts-production.up.railway.app',
+			'company-profile-fts-production-4541.up.railway.app',
+			'fts.biz.id',
 			'preview.fts.biz.id',
 			'fujiyama-tech.railway.app',
 			'localhost',
